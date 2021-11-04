@@ -236,4 +236,162 @@ RSpec.describe Absence do
       expect(absence.matches_type?(other)).to be(false)
     end
   end
+
+  describe "#adjacent_to?" do
+    subject_start_date = Date.new(2000, 6, 1)
+    subject_end_date = Date.new(2000, 7, 1)
+
+    [
+      # 1 day gap
+      {
+        name: "returns false when the other absence starts more than one day after the end of the subject",
+        other: {
+          start_date: subject_end_date + 2,
+          end_date: subject_end_date + 30
+        },
+        expectation: false
+      },
+      {
+        name: "returns false when the other absence ends more than one day before the start of the subject",
+        other: {
+          start_date: subject_end_date - 30,
+          end_date: subject_end_date - 2
+        },
+        expectation: false
+      },
+
+      # next/previous day
+      {
+        name: "returns true when the other absence starts (AM) on the day after the end (PM) of the subject",
+        other: {
+          start_date: subject_end_date + 1,
+          end_date: subject_end_date + 30,
+          start_meridiem: :am
+        },
+        subject: {
+          end_meridiem: :pm
+        },
+        expectation: true
+      },
+      {
+        name: "returns true when the other absence ends (PM) on the day before the start (AM) of the subject",
+        other: {
+          start_date: subject_start_date - 30,
+          end_date: subject_start_date - 1,
+          end_meridiem: :pm
+        },
+        subject: {
+          start_meridiem: :am
+        },
+        expectation: true
+      },
+
+      # same day
+      {
+        name: "returns true when the other absence starts (PM) on the same day as the end (AM) of the subject",
+        other: {
+          start_date: subject_end_date,
+          end_date: subject_end_date + 30,
+          start_meridiem: :pm
+        },
+        subject: {
+          end_meridiem: :am
+        },
+        expectation: true
+      },
+      {
+        name: "returns true when the other absence ends (AM) on the same day as the start (PM) of the subject",
+        other: {
+          start_date: subject_start_date - 30,
+          end_date: subject_start_date,
+          end_meridiem: :am
+        },
+        subject: {
+          start_meridiem: :pm
+        },
+        expectation: true
+      },
+
+      # same day with overlap
+      {
+        name: "returns false when the other absence starts (AM) on the same day as the end (PM) of the subject",
+        other: {
+          start_date: subject_end_date,
+          end_date: subject_end_date + 30,
+          start_meridiem: :am
+        },
+        subject: {
+          end_meridiem: :pm
+        },
+        expectation: false
+      },
+      {
+        name: "returns false when the other absence ends (PM) on the same day as the start (AM) of the subject",
+        other: {
+          start_date: subject_start_date - 30,
+          end_date: subject_start_date,
+          end_meridiem: :pm
+        },
+        subject: {
+          start_meridiem: :am
+        },
+        expectation: false
+      },
+
+      # full day overlap
+      {
+        name: "returns false when the other absence starts between the start and the end of the subject",
+        other: {
+          start_date: subject_start_date + 1,
+          end_date: subject_end_date + 1
+        },
+        expectation: false
+      },
+      {
+        name: "returns false when the other absence ends between the start and the end of the subject",
+        other: {
+          start_date: subject_start_date - 1,
+          end_date: subject_end_date - 1
+        },
+        expectation: false
+      },
+
+      # covered
+      {
+        name: "returns false when the other absence is covered by the subject",
+        other: {
+          start_date: subject_start_date + 1,
+          end_date: subject_end_date - 1
+        },
+        expectation: false
+      },
+      {
+        name: "returns false when the other absence covers the subject",
+        other: {
+          start_date: subject_start_date - 1,
+          end_date: subject_end_date + 1
+        },
+        expectation: false
+      }
+    ].each { |test_case|
+      it test_case[:name] do
+        other = Absence.new(
+          type: :holiday,
+          start_date: test_case[:other][:start_date],
+          end_date: test_case[:other][:end_date],
+          start_meridiem: test_case[:other][:start_meridiem] || :am,
+          end_meridiem: test_case[:other][:end_meridiem] || :pm
+        )
+        absence = Absence.new(
+          type: :holiday,
+          start_date: subject_start_date,
+          end_date: subject_end_date,
+          start_meridiem: test_case.fetch(:subject, {})[:start_meridiem] || :am,
+          end_meridiem: test_case.fetch(:subject, {})[:end_meridiem] || :pm
+        )
+
+        expect(absence.adjacent_to?(other)).to be(test_case[:expectation])
+      end
+    }
+  end
 end

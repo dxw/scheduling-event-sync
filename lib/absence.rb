@@ -47,4 +47,21 @@ class Absence
   def matches_type?(other)
     other.type == type
   end
+
+  def adjacent_to?(other)
+    ends_at_other_start =
+      end_date + 1 == other.start_date || (
+        end_date == other.start_date &&
+        end_meridiem == :am &&
+        other.start_meridiem == :pm
+      )
+    other_ends_at_start =
+      other.end_date + 1 == start_date || (
+        other.end_date == start_date &&
+        other.end_meridiem == :am &&
+        start_meridiem == :pm
+      )
+
+    ends_at_other_start || other_ends_at_start
+  end
 end
