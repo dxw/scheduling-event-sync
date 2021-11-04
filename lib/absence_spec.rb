@@ -182,4 +182,36 @@ RSpec.describe Absence do
       expect(absence).not_to respond_to(:end_meridiem=)
     end
   end
+
+  describe "#matches_type?" do
+    it "returns true when the other absence is of the same type" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(absence.matches_type?(other)).to be(true)
+    end
+
+    it "returns false when the other absence is of the a different type" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :sickness,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(absence.matches_type?(other)).to be(false)
+    end
+  end
 end

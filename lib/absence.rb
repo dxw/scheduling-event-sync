@@ -31,4 +31,8 @@ class Absence
     @start_meridiem = start_meridiem
     @end_meridiem = end_meridiem
   end
+
+  def matches_type?(other)
+    other.type == type
+  end
 end
