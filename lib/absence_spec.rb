@@ -394,4 +394,70 @@ RSpec.describe Absence do
       end
     }
   end
+
+  describe "#starts_before?" do
+    it "returns true when the other absence starts the day after the start of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date + 1,
+        end_date: end_date + 30
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(absence.starts_before?(other)).to be(true)
+    end
+
+    it "returns true when the other absence starts (PM) on the same day as the start (AM) of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date + 30,
+        start_meridiem: :pm
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :am
+      )
+
+      expect(absence.starts_before?(other)).to be(true)
+    end
+
+    it "returns false when the other absence starts (AM) on the same day as the start (PM) of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date + 30,
+        start_meridiem: :am
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :pm
+      )
+
+      expect(absence.starts_before?(other)).to be(false)
+    end
+
+    it "returns false when the other absence starts the day before the start of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 1,
+        end_date: end_date + 30
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(absence.starts_before?(other)).to be(false)
+    end
+  end
 end

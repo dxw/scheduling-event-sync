@@ -64,4 +64,14 @@ class Absence
 
     ends_at_other_start || other_ends_at_start
   end
+
+  def starts_before?(other)
+    starts_days_before = start_date < other.start_date
+    starts_earlier_on_day =
+      start_date == other.start_date &&
+      start_meridiem == :am &&
+      other.start_meridiem == :pm
+
+    starts_days_before || starts_earlier_on_day
+  end
 end
