@@ -526,4 +526,96 @@ RSpec.describe Absence do
       expect(absence.ends_after?(other)).to be(false)
     end
   end
+
+  describe "#covers?" do
+    it "returns true when the subject starts before and ends after the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date + 1,
+        end_date: end_date - 1
+      )
+
+      expect(absence.covers?(other)).to be(true)
+    end
+
+    it "returns true when the subject starts before and ends at the same time as the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date + 1,
+        end_date: end_date
+      )
+
+      expect(absence.covers?(other)).to be(true)
+    end
+
+    it "returns false when the subject starts before and ends before the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date + 1,
+        end_date: end_date + 1
+      )
+
+      expect(absence.covers?(other)).to be(false)
+    end
+
+    it "returns true when the subject starts at the same time as and ends after the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date - 1
+      )
+
+      expect(absence.covers?(other)).to be(true)
+    end
+
+    it "returns false when the subject starts after and ends after the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 1,
+        end_date: end_date - 1
+      )
+
+      expect(absence.covers?(other)).to be(false)
+    end
+
+    it "returns false when the subject starts after and ends before the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 1,
+        end_date: end_date + 1
+      )
+
+      expect(absence.covers?(other)).to be(false)
+    end
+  end
 end

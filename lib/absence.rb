@@ -84,4 +84,24 @@ class Absence
 
     ends_days_after || ends_later_on_day
   end
+
+  def covers?(other)
+    space_around = starts_before?(other) && ends_after?(other)
+    matches_start_day =
+      other.start_date == start_date &&
+      (
+        other.start_meridiem == start_meridiem ||
+        (start_meridiem == :am && other.start_meridiem == :pm)
+      ) &&
+      ends_after?(other)
+    matches_end_day =
+      other.end_date == end_date &&
+      (
+        other.end_meridiem == end_meridiem ||
+        (end_meridiem == :pm && other.end_meridiem == :am)
+      ) &&
+      starts_before?(other)
+
+    space_around || matches_start_day || matches_end_day
+  end
 end
