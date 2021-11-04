@@ -460,4 +460,70 @@ RSpec.describe Absence do
       expect(absence.starts_before?(other)).to be(false)
     end
   end
+
+  describe "#ends_after?" do
+    it "returns true when the other absence ends the day before the end of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 30,
+        end_date: end_date - 1
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(absence.ends_after?(other)).to be(true)
+    end
+
+    it "returns true when the other absence ends (AM) on the same day as the end (PM) of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 30,
+        end_date: end_date,
+        end_meridiem: :am
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        end_meridiem: :pm
+      )
+
+      expect(absence.ends_after?(other)).to be(true)
+    end
+
+    it "returns false when the other absence ends (PM) on the same day as the end (AM) of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 30,
+        end_date: end_date,
+        end_meridiem: :pm
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        end_meridiem: :am
+      )
+
+      expect(absence.ends_after?(other)).to be(false)
+    end
+
+    it "returns false when the other absence ends the day after the end of the subject" do
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 30,
+        end_date: end_date + 1
+      )
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(absence.ends_after?(other)).to be(false)
+    end
+  end
 end
