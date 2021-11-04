@@ -618,4 +618,66 @@ RSpec.describe Absence do
       expect(absence.covers?(other)).to be(false)
     end
   end
+
+  describe "#overlaps?" do
+    it "returns false when the subject starts before and ends after the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 1,
+        end_date: end_date + 1
+      )
+
+      expect(absence.overlaps?(other)).to be(false)
+    end
+
+    it "returns true when the subject starts before and ends before the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date - 1,
+        end_date: end_date - 1
+      )
+
+      expect(absence.overlaps?(other)).to be(true)
+    end
+
+    it "returns true when the subject starts after and ends after the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date + 1,
+        end_date: end_date + 1
+      )
+
+      expect(absence.overlaps?(other)).to be(true)
+    end
+
+    it "returns false when the subject starts after and ends before the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date + 1,
+        end_date: end_date - 1
+      )
+
+      expect(absence.overlaps?(other)).to be(false)
+    end
+  end
 end

@@ -104,4 +104,29 @@ class Absence
 
     space_around || matches_start_day || matches_end_day
   end
+
+  def overlaps?(other)
+    prequel =
+      starts_before?(other) &&
+      other.ends_after?(self) &&
+      (
+        other.start_date < end_date ||
+        (
+          other.start_date == end_date &&
+          (other.start_meridiem == end_meridiem || other.start_meridiem == :am)
+        )
+      )
+    sequel =
+      other.starts_before?(self) &&
+      ends_after?(other) &&
+      (
+        start_date < other.end_date ||
+        (
+          start_date == other.end_date &&
+          (start_meridiem == other.end_meridiem || start_meridiem == :am)
+        )
+      )
+
+    prequel || sequel
+  end
 end
