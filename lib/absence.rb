@@ -170,4 +170,12 @@ class Absence
       end_meridiem: new_end_meridiem
     )
   end
+
+  def ==(other)
+    other.type == type &&
+      other.start_date == start_date &&
+      other.end_date == end_date &&
+      other.start_meridiem == start_meridiem &&
+      other.end_meridiem == end_meridiem
+  end
 end

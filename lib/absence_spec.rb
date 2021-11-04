@@ -882,4 +882,44 @@ RSpec.describe Absence do
       expect(new_after.end_meridiem).to eq(:pm)
     end
   end
+
+  describe "#==" do
+    it "returns true when the other absence has the same initializer properties as the subject" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :pm,
+        end_meridiem: :am
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :pm,
+        end_meridiem: :am
+      )
+
+      expect(absence == other).to be(true)
+    end
+
+    it "returns false when the other absence has different initializer properties from the subject" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :pm,
+        end_meridiem: :am
+      )
+      other = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :am,
+        end_meridiem: :pm
+      )
+
+      expect(absence == other).to be(false)
+    end
+  end
 end
