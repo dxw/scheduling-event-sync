@@ -774,4 +774,112 @@ RSpec.describe Absence do
       expect(absence.mergeable_with?(other)).to be(false)
     end
   end
+
+  describe "#merge_with" do
+    it "rejects an impossible merge" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:mergeable_with?).with(other) { false }
+
+      expect {
+        absence.merge_with(other)
+      }.to raise_error("Cannot merge these absences")
+    end
+
+    it "returns the subject when it covers the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:mergeable_with?).with(other) { true }
+      allow(absence).to receive(:covers?).with(other) { true }
+
+      expect(absence.merge_with(other)).to be(absence)
+    end
+
+    it "returns the other absence when it covers the subject" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:mergeable_with?).with(other) { true }
+      allow(absence).to receive(:covers?).with(other) { false }
+      allow(other).to receive(:covers?).with(absence) { true }
+
+      expect(absence.merge_with(other)).to be(other)
+    end
+
+    it "returns a new absence with the earliest start date and matching start meridiem" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        start_meridiem: :pm
+      )
+      before = Absence.new(
+        type: :holiday,
+        start_date: start_date - 3,
+        end_date: end_date,
+        start_meridiem: :am
+      )
+      after = Absence.new(
+        type: :holiday,
+        start_date: start_date + 3,
+        end_date: end_date,
+        start_meridiem: :am
+      )
+
+      new_before = absence.merge_with(before)
+
+      expect(new_before.start_date).to eq(start_date - 3)
+      expect(new_before.start_meridiem).to eq(:am)
+
+      new_after = absence.merge_with(after)
+
+      expect(new_after.start_date).to eq(start_date)
+      expect(new_after.start_meridiem).to eq(:pm)
+    end
+
+    it "returns a new absence with the latest end date and matching end meridiem" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date,
+        end_meridiem: :am
+      )
+      before = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date - 3,
+        end_meridiem: :pm
+      )
+      after = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date + 3,
+        end_meridiem: :pm
+      )
+
+      new_before = absence.merge_with(before)
+
+      expect(new_before.end_date).to eq(end_date)
+      expect(new_before.end_meridiem).to eq(:am)
+
+      new_after = absence.merge_with(after)
+
+      expect(new_after.end_date).to eq(end_date + 3)
+      expect(new_after.end_meridiem).to eq(:pm)
+    end
+  end
 end

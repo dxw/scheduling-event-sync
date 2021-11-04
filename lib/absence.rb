@@ -138,4 +138,36 @@ class Absence
       other.covers?(self)
     )
   end
+
+  def merge_with(other)
+    unless mergeable_with?(other)
+      raise "Cannot merge these absences"
+    end
+
+    return self if covers?(other)
+    return other if other.covers?(self)
+
+    new_start_date = start_date
+    new_start_meridiem = start_meridiem
+    new_end_date = end_date
+    new_end_meridiem = end_meridiem
+
+    if other.starts_before?(self)
+      new_start_date = other.start_date
+      new_start_meridiem = other.start_meridiem
+    end
+
+    if other.ends_after?(self)
+      new_end_date = other.end_date
+      new_end_meridiem = other.end_meridiem
+    end
+
+    Absence.new(
+      type: type,
+      start_date: new_start_date,
+      end_date: new_end_date,
+      start_meridiem: new_start_meridiem,
+      end_meridiem: new_end_meridiem
+    )
+  end
 end
