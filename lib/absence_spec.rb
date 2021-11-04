@@ -680,4 +680,98 @@ RSpec.describe Absence do
       expect(absence.overlaps?(other)).to be(false)
     end
   end
+
+  describe "#mergeable_with?" do
+    it "returns false when the subject and other absence are of different types" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:matches_type?).with(other) { false }
+
+      expect(absence.mergeable_with?(other)).to be(false)
+    end
+
+    it "returns true when the subject and other absence are adjacent" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:matches_type?).with(other) { true }
+      allow(absence).to receive(:adjacent_to?).with(other) { true }
+
+      expect(absence.mergeable_with?(other)).to be(true)
+    end
+
+    it "returns true when the subject and other absence overlap" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:matches_type?).with(other) { true }
+      allow(absence).to receive(:adjacent_to?).with(other) { false }
+      allow(absence).to receive(:overlaps?).with(other) { true }
+
+      expect(absence.mergeable_with?(other)).to be(true)
+    end
+
+    it "returns true when the subject covers the other absence" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:matches_type?).with(other) { true }
+      allow(absence).to receive(:adjacent_to?).with(other) { false }
+      allow(absence).to receive(:overlaps?).with(other) { false }
+      allow(absence).to receive(:covers?).with(other) { true }
+
+      expect(absence.mergeable_with?(other)).to be(true)
+    end
+
+    it "returns true when the other absence covers the subject" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:matches_type?).with(other) { true }
+      allow(absence).to receive(:adjacent_to?).with(other) { false }
+      allow(absence).to receive(:overlaps?).with(other) { false }
+      allow(absence).to receive(:covers?).with(other) { false }
+      allow(other).to receive(:covers?).with(absence) { true }
+
+      expect(absence.mergeable_with?(other)).to be(true)
+    end
+
+    it "returns false when the subject and other absence are not adjacent, overlapping, nor covering each other" do
+      absence = Absence.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      other = instance_double(Absence)
+
+      allow(absence).to receive(:matches_type?).with(other) { true }
+      allow(absence).to receive(:adjacent_to?).with(other) { false }
+      allow(absence).to receive(:overlaps?).with(other) { false }
+      allow(absence).to receive(:covers?).with(other) { false }
+      allow(other).to receive(:covers?).with(absence) { false }
+
+      expect(absence.mergeable_with?(other)).to be(false)
+    end
+  end
 end

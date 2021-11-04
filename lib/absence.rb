@@ -129,4 +129,13 @@ class Absence
 
     prequel || sequel
   end
+
+  def mergeable_with?(other)
+    matches_type?(other) && (
+      adjacent_to?(other) ||
+      overlaps?(other) ||
+      covers?(other) ||
+      other.covers?(self)
+    )
+  end
 end
