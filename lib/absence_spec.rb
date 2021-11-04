@@ -36,6 +36,28 @@ RSpec.describe Absence do
       }.to raise_error("2000-02-01 is not a date")
     end
 
+    it "rejects an end date before the start date" do
+      expect {
+        Absence.new(
+          type: :holiday,
+          start_date: start_date,
+          end_date: start_date - 1
+        )
+      }.to raise_error("An absence cannot end before it starts")
+    end
+
+    it "rejects an end meridiem before the start meridiem when the start and end dates are the same" do
+      expect {
+        Absence.new(
+          type: :holiday,
+          start_date: start_date,
+          end_date: start_date,
+          start_meridiem: :pm,
+          end_meridiem: :am
+        )
+      }.to raise_error("An absence cannot end before it starts")
+    end
+
     it "rejects an invalid start meridiem" do
       expect {
         Absence.new(

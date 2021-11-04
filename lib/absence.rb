@@ -25,6 +25,18 @@ class Absence
       raise "#{end_meridiem} is not a recognized meridiem"
     end
 
+    if end_date < start_date
+      raise "An absence cannot end before it starts"
+    end
+
+    if start_date == end_date
+      if start_meridiem == end_meridiem
+        raise "An absence cannot end in the same meridiem on the same day as it starts"
+      elsif start_meridiem == :pm && end_meridiem == :am
+        raise "An absence cannot end before it starts"
+      end
+    end
+
     @type = type
     @start_date = start_date
     @end_date = end_date
