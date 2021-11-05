@@ -33,6 +33,107 @@ RSpec.describe AbsenceCollection do
     end
   end
 
+  describe "#all_changes_from" do
+    let(:ours_a) {
+      Absence.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 1)
+      )
+    }
+    let(:ours_b) {
+      Absence.new(
+        type: :sickness,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 1)
+      )
+    }
+    let(:ours_c) {
+      Absence.new(
+        type: :sickness,
+        start_date: Date.new(2000, 1, 4),
+        end_date: Date.new(2000, 3, 1)
+      )
+    }
+    let(:theirs_a) {
+      Absence.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 1),
+        start_meridiem: :pm
+      )
+    }
+    let(:theirs_b) {
+      Absence.new(
+        type: :sickness,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 1),
+        end_meridiem: :am
+      )
+    }
+    let(:theirs_c) {
+      Absence.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 4),
+        end_date: Date.new(2000, 3, 1)
+      )
+    }
+    let(:shared_a) {
+      Absence.new(
+        type: :holiday,
+        start_date: Date.new(2000, 4, 1),
+        end_date: Date.new(2000, 5, 1)
+      )
+    }
+    let(:shared_b) {
+      Absence.new(
+        type: :holiday,
+        start_date: Date.new(2000, 5, 1),
+        end_date: Date.new(2000, 6, 1)
+      )
+    }
+
+    let(:ours) {
+      AbsenceCollection.new([
+        ours_a,
+        ours_b,
+        ours_c,
+        shared_a,
+        shared_b
+      ])
+    }
+    let(:theirs) {
+      AbsenceCollection.new([
+        theirs_a,
+        theirs_b,
+        theirs_c,
+        shared_a,
+        shared_b
+      ])
+    }
+
+    it "returns all absences in ours not found in theirs as additions" do
+      result = ours.all_changes_from(theirs)
+
+      expect(result[:added].absences).to eq([ours_a, ours_b, ours_c])
+    end
+
+    it "returns all absences in theirs not found in ours as removals" do
+      result = ours.all_changes_from(theirs)
+
+      expect(result[:removed].absences).to eq([theirs_a, theirs_b, theirs_c])
+    end
+
+    it "doesn't include any shared absences in additions and removals" do
+      result = ours.all_changes_from(theirs)
+
+      expect(result[:added].absences).not_to include(shared_a)
+      expect(result[:added].absences).not_to include(shared_b)
+      expect(result[:removed].absences).not_to include(shared_a)
+      expect(result[:removed].absences).not_to include(shared_b)
+    end
+  end
+
   describe "#compress!" do
     it "modifies wrapped absences array to merge all mergeable items" do
       mergeable_holiday_1a = Absence.new(
