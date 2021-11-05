@@ -132,6 +132,32 @@ RSpec.describe AbsenceCollection do
       expect(result[:removed].absences).not_to include(shared_a)
       expect(result[:removed].absences).not_to include(shared_b)
     end
+
+    it "returns all absences in ours after compression not found in theirs as additions when compression is enabled" do
+      result = ours.all_changes_from(theirs, compress: true)
+
+      expect(result[:added].absences).to eq([
+        ours_a,
+        Absence.new(
+          type: ours_b.type,
+          start_date: ours_b.start_date,
+          end_date: ours_c.end_date
+        ),
+        Absence.new(
+          type: shared_a.type,
+          start_date: shared_a.start_date,
+          end_date: shared_b.end_date
+        )
+      ])
+    end
+
+    it "returns all absences in theirs not found in ours after compression as removals when compression is enabled" do
+      result = ours.all_changes_from(theirs, compress: true)
+
+      expect(result[:removed].absences).to eq([
+        theirs_a, theirs_b, theirs_c, shared_a, shared_b
+      ])
+    end
   end
 
   describe "#compress!" do

@@ -7,7 +7,9 @@ class AbsenceCollection
     @absences = absences.sort_by(&:start_date)
   end
 
-  def all_changes_from(other)
+  def all_changes_from(other, compress: false)
+    compress! if compress
+
     our_unshared_absences = absences.reject { |absence|
       other.absences.include?(absence)
     }
@@ -15,9 +17,14 @@ class AbsenceCollection
       absences.include?(absence)
     }
 
+    added = AbsenceCollection.new(our_unshared_absences)
+    removed = AbsenceCollection.new(their_unshared_absences)
+
+    added.compress! if compress
+
     {
-      added: AbsenceCollection.new(our_unshared_absences),
-      removed: AbsenceCollection.new(their_unshared_absences)
+      added: added,
+      removed: removed
     }
   end
 
