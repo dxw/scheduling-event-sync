@@ -8,7 +8,7 @@ class ProductiveClient
 
     DEFAULT_WORKING_HOURS = 7
 
-    def configure(account_id:, api_key:, holiday_event_id:)
+    def configure(account_id:, api_key:, event_ids:)
       reset_memo_wise
 
       Productive.configure do |config|
@@ -16,10 +16,10 @@ class ProductiveClient
         config.api_key = api_key
       end
 
-      @holiday_event_id = holiday_event_id
+      @event_ids = event_ids
     end
 
-    def get_holiday_events(after:)
+    def events(after:)
       bookings_by_email = bookings(after: after).group_by { |booking|
         booking.person.email.downcase
       }
@@ -50,7 +50,7 @@ class ProductiveClient
             end
 
             Event.new(
-              type: :holiday,
+              type: event_ids.key(booking.event.id),
               start_date: start_date,
               end_date: end_date,
               start_half_day: half_day,
@@ -62,21 +62,21 @@ class ProductiveClient
         hash[email] = EventCollection.new(events)
       }
     end
-    memo_wise :get_holiday_events
+    memo_wise :events
 
     private
 
-    attr_reader :holiday_event_id
+    attr_reader :event_ids
 
-    def holidays(after:)
+    def bookings(after:)
       Productive::Booking
         .where(
-          event_id: holiday_event_id,
+          event_id: event_ids.values,
           after: after
         )
         .all
     end
-    memo_wise :holidays
+    memo_wise :bookings
 
     def person(email:)
       Productive::Person.where(email: email).first
