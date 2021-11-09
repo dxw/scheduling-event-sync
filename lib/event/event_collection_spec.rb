@@ -60,7 +60,7 @@ RSpec.describe EventCollection do
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1),
-        start_meridiem: :pm
+        start_half_day: true
       )
     }
     let(:theirs_b) {
@@ -68,7 +68,7 @@ RSpec.describe EventCollection do
         type: :sickness,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1),
-        end_meridiem: :am
+        end_half_day: true
       )
     }
     let(:theirs_c) {

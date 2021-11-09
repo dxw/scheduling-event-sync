@@ -45,40 +45,6 @@ RSpec.describe Event do
         )
       }.to raise_error("An event cannot end before it starts")
     end
-
-    it "rejects an end meridiem before the start meridiem when the start and end dates are the same" do
-      expect {
-        Event.new(
-          type: :holiday,
-          start_date: start_date,
-          end_date: start_date,
-          start_meridiem: :pm,
-          end_meridiem: :am
-        )
-      }.to raise_error("An event cannot end before it starts")
-    end
-
-    it "rejects an invalid start meridiem" do
-      expect {
-        Event.new(
-          type: :holiday,
-          start_date: start_date,
-          end_date: end_date,
-          start_meridiem: :invalid
-        )
-      }.to raise_error("invalid is not a recognized meridiem")
-    end
-
-    it "rejects an invalid end meridiem" do
-      expect {
-        Event.new(
-          type: :holiday,
-          start_date: start_date,
-          end_date: end_date,
-          end_meridiem: :invalid
-        )
-      }.to raise_error("invalid is not a recognized meridiem")
-    end
   end
 
   describe "#type" do
@@ -147,26 +113,26 @@ RSpec.describe Event do
     end
   end
 
-  describe "#start_meridiem" do
-    it "returns the initial start meridiem" do
+  describe "#start_half_day" do
+    it "returns the initial start half day" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm
+        start_half_day: true
       )
 
-      expect(event.start_meridiem).to eq(:pm)
+      expect(event.start_half_day).to be(true)
     end
 
-    it "defaults to AM" do
+    it "defaults to false" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(event.start_meridiem).to eq(:am)
+      expect(event.start_half_day).to be(false)
     end
 
     it "is read-only" do
@@ -174,23 +140,33 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm
+        start_half_day: true
       )
 
-      expect(event).not_to respond_to(:start_meridiem=)
+      expect(event).not_to respond_to(:start_half_day=)
     end
   end
 
-  describe "#end_meridiem" do
-    it "returns the initial end meridiem" do
+  describe "#end_half_day" do
+    it "returns the initial end half day" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_meridiem: :am
+        end_half_day: true
       )
 
-      expect(event.end_meridiem).to eq(:am)
+      expect(event.end_half_day).to be(true)
+    end
+
+    it "defaults to false" do
+      event = Event.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+
+      expect(event.end_half_day).to be(false)
     end
 
     it "is read-only" do
@@ -198,10 +174,10 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_meridiem: :am
+        end_half_day: true
       )
 
-      expect(event).not_to respond_to(:end_meridiem=)
+      expect(event).not_to respond_to(:end_half_day=)
     end
   end
 
@@ -266,10 +242,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date + 1,
           end_date: subject_end_date + 30,
-          start_meridiem: :am
+          start_half_day: false
         },
         subject: {
-          end_meridiem: :pm
+          end_half_day: false
         },
         expectation: true
       },
@@ -278,10 +254,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date - 1,
-          end_meridiem: :pm
+          end_half_day: false
         },
         subject: {
-          start_meridiem: :am
+          start_half_day: false
         },
         expectation: true
       },
@@ -292,10 +268,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date,
           end_date: subject_end_date + 30,
-          start_meridiem: :pm
+          start_half_day: true
         },
         subject: {
-          end_meridiem: :am
+          end_half_day: true
         },
         expectation: true
       },
@@ -304,10 +280,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date,
-          end_meridiem: :am
+          end_half_day: true
         },
         subject: {
-          start_meridiem: :pm
+          start_half_day: true
         },
         expectation: true
       },
@@ -318,10 +294,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date,
           end_date: subject_end_date + 30,
-          start_meridiem: :am
+          start_half_day: false
         },
         subject: {
-          end_meridiem: :pm
+          end_half_day: false
         },
         expectation: false
       },
@@ -330,10 +306,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date,
-          end_meridiem: :pm
+          end_half_day: false
         },
         subject: {
-          start_meridiem: :am
+          start_half_day: false
         },
         expectation: false
       },
@@ -379,15 +355,15 @@ RSpec.describe Event do
           type: :holiday,
           start_date: test_case[:other][:start_date],
           end_date: test_case[:other][:end_date],
-          start_meridiem: test_case[:other][:start_meridiem] || :am,
-          end_meridiem: test_case[:other][:end_meridiem] || :pm
+          start_half_day: test_case[:other][:start_half_day],
+          end_half_day: test_case[:other][:end_half_day]
         )
         event = Event.new(
           type: :holiday,
           start_date: subject_start_date,
           end_date: subject_end_date,
-          start_meridiem: test_case.fetch(:subject, {})[:start_meridiem] || :am,
-          end_meridiem: test_case.fetch(:subject, {})[:end_meridiem] || :pm
+          start_half_day: test_case.fetch(:subject, {})[:start_half_day],
+          end_half_day: test_case.fetch(:subject, {})[:end_half_day]
         )
 
         expect(event.adjacent_to?(other)).to be(test_case[:expectation])
@@ -416,13 +392,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 30,
-        start_meridiem: :pm
+        start_half_day: true
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :am
+        start_half_day: false
       )
 
       expect(event.starts_before?(other)).to be(true)
@@ -433,13 +409,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 30,
-        start_meridiem: :am
+        start_half_day: false
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm
+        start_half_day: true
       )
 
       expect(event.starts_before?(other)).to be(false)
@@ -482,13 +458,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date,
-        end_meridiem: :am
+        end_half_day: true
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_meridiem: :pm
+        end_half_day: false
       )
 
       expect(event.ends_after?(other)).to be(true)
@@ -499,13 +475,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date,
-        end_meridiem: :pm
+        end_half_day: false
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_meridiem: :am
+        end_half_day: true
       )
 
       expect(event.ends_after?(other)).to be(false)
@@ -820,66 +796,66 @@ RSpec.describe Event do
       expect(event.merge_with(other)).to be(other)
     end
 
-    it "returns a new event with the earliest start date and matching start meridiem" do
+    it "returns a new event with the earliest start date and matching start half day" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm
+        start_half_day: true
       )
       before = Event.new(
         type: :holiday,
         start_date: start_date - 3,
         end_date: end_date,
-        start_meridiem: :am
+        start_half_day: false
       )
       after = Event.new(
         type: :holiday,
         start_date: start_date + 3,
         end_date: end_date,
-        start_meridiem: :am
+        start_half_day: false
       )
 
       new_before = event.merge_with(before)
 
       expect(new_before.start_date).to eq(start_date - 3)
-      expect(new_before.start_meridiem).to eq(:am)
+      expect(new_before.start_half_day).to be(false)
 
       new_after = event.merge_with(after)
 
       expect(new_after.start_date).to eq(start_date)
-      expect(new_after.start_meridiem).to eq(:pm)
+      expect(new_after.start_half_day).to be(true)
     end
 
-    it "returns a new event with the latest end date and matching end meridiem" do
+    it "returns a new event with the latest end date and matching end half day" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_meridiem: :am
+        end_half_day: true
       )
       before = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date - 3,
-        end_meridiem: :pm
+        end_half_day: false
       )
       after = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 3,
-        end_meridiem: :pm
+        end_half_day: false
       )
 
       new_before = event.merge_with(before)
 
       expect(new_before.end_date).to eq(end_date)
-      expect(new_before.end_meridiem).to eq(:am)
+      expect(new_before.end_half_day).to be(true)
 
       new_after = event.merge_with(after)
 
       expect(new_after.end_date).to eq(end_date + 3)
-      expect(new_after.end_meridiem).to eq(:pm)
+      expect(new_after.end_half_day).to be(false)
     end
   end
 
@@ -889,15 +865,15 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm,
-        end_meridiem: :am
+        start_half_day: true,
+        end_half_day: true
       )
       other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm,
-        end_meridiem: :am
+        start_half_day: true,
+        end_half_day: true
       )
 
       expect(event == other).to be(true)
@@ -908,15 +884,15 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :pm,
-        end_meridiem: :am
+        start_half_day: true,
+        end_half_day: true
       )
       other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_meridiem: :am,
-        end_meridiem: :pm
+        start_half_day: false,
+        end_half_day: false
       )
 
       expect(event == other).to be(false)
