@@ -160,8 +160,8 @@ RSpec.describe EventCollection do
     end
   end
 
-  describe "#compress!" do
-    it "modifies wrapped events array to merge all mergeable items" do
+  describe "#compress" do
+    it "returns a new collection with all mergeable events merged" do
       mergeable_holiday_1a = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
@@ -214,9 +214,9 @@ RSpec.describe EventCollection do
         unmergeable_sickness
       ])
 
-      collection.compress!
+      result = collection.compress
 
-      expect(collection.events).to eq([
+      expect(result.events).to eq([
         mergeable_holiday_1a,
         unmergeable_sickness,
         Event.new(
@@ -228,10 +228,25 @@ RSpec.describe EventCollection do
       ])
     end
 
-    it "returns the subject" do
-      collection = EventCollection.new([])
+    it "doesn't modify the events of the original" do
+      mergeable_holiday_a = Event.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 1)
+      )
+      mergeable_holiday_b = Event.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 10),
+        end_date: Date.new(2000, 1, 14)
+      )
 
-      expect(collection.compress!).to be(collection)
+      collection = EventCollection.new([mergeable_holiday_a, mergeable_holiday_b])
+
+      events = collection.events
+
+      collection.compress
+
+      expect(collection.events).to be(events)
     end
   end
 end

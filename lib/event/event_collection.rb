@@ -8,28 +8,26 @@ class EventCollection
   end
 
   def all_changes_from(other, compress: false)
-    compress! if compress
+    our = compress ? self.compress : self
 
-    our_unshared_events = events.reject { |event|
+    our_unshared_events = our.events.reject { |event|
       other.events.include?(event)
     }
     their_unshared_events = other.events.reject { |event|
-      events.include?(event)
+      our.events.include?(event)
     }
 
-    added = EventCollection.new(our_unshared_events)
-    removed = EventCollection.new(their_unshared_events)
-
-    added.compress! if compress
+    added = self.class.new(our_unshared_events)
+    removed = self.class.new(their_unshared_events)
 
     {
-      added: added,
+      added: compress ? added.compress : added,
       removed: removed
     }
   end
 
-  def compress!
-    self.events = events
+  def compress
+    compressed_events = events
       .group_by(&:type)
       .flat_map { |(type, group)|
         group.each_with_object([]) { |event, list|
@@ -42,7 +40,7 @@ class EventCollection
       }
       .sort_by(&:start_date)
 
-    self
+    self.class.new(compressed_events)
   end
 
   private
