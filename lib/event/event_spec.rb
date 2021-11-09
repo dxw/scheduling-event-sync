@@ -1,24 +1,24 @@
 require "date"
-require_relative "./absence"
+require_relative "./event"
 
-RSpec.describe Absence do
+RSpec.describe Event do
   let(:start_date) { Date.new(2000, 1, 1) }
   let(:end_date) { Date.new(2000, 2, 1) }
 
   describe ".new" do
     it "rejects an invalid type" do
       expect {
-        Absence.new(
+        Event.new(
           type: :invalid,
           start_date: start_date,
           end_date: end_date
         )
-      }.to raise_error("invalid is not a recognized absence type")
+      }.to raise_error("invalid is not a recognized event type")
     end
 
     it "rejects a non-date start date" do
       expect {
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: "2000-01-01",
           end_date: end_date
@@ -28,7 +28,7 @@ RSpec.describe Absence do
 
     it "rejects a non-date end date" do
       expect {
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: start_date,
           end_date: "2000-02-01"
@@ -38,29 +38,29 @@ RSpec.describe Absence do
 
     it "rejects an end date before the start date" do
       expect {
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: start_date,
           end_date: start_date - 1
         )
-      }.to raise_error("An absence cannot end before it starts")
+      }.to raise_error("An event cannot end before it starts")
     end
 
     it "rejects an end meridiem before the start meridiem when the start and end dates are the same" do
       expect {
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: start_date,
           end_date: start_date,
           start_meridiem: :pm,
           end_meridiem: :am
         )
-      }.to raise_error("An absence cannot end before it starts")
+      }.to raise_error("An event cannot end before it starts")
     end
 
     it "rejects an invalid start meridiem" do
       expect {
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: start_date,
           end_date: end_date,
@@ -71,7 +71,7 @@ RSpec.describe Absence do
 
     it "rejects an invalid end meridiem" do
       expect {
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: start_date,
           end_date: end_date,
@@ -83,157 +83,157 @@ RSpec.describe Absence do
 
   describe "#type" do
     it "returns the initial type" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.type).to eq(:holiday)
+      expect(event.type).to eq(:holiday)
     end
 
     it "is read-only" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence).not_to respond_to(:type=)
+      expect(event).not_to respond_to(:type=)
     end
   end
 
   describe "#start_date" do
     it "returns the initial start date" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.start_date).to eq(start_date)
+      expect(event.start_date).to eq(start_date)
     end
 
     it "is read-only" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence).not_to respond_to(:start_date=)
+      expect(event).not_to respond_to(:start_date=)
     end
   end
 
   describe "#end_date" do
     it "returns the initial end date" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.end_date).to eq(end_date)
+      expect(event.end_date).to eq(end_date)
     end
 
     it "is read-only" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence).not_to respond_to(:end_date=)
+      expect(event).not_to respond_to(:end_date=)
     end
   end
 
   describe "#start_meridiem" do
     it "returns the initial start meridiem" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :pm
       )
 
-      expect(absence.start_meridiem).to eq(:pm)
+      expect(event.start_meridiem).to eq(:pm)
     end
 
     it "defaults to AM" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.start_meridiem).to eq(:am)
+      expect(event.start_meridiem).to eq(:am)
     end
 
     it "is read-only" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :pm
       )
 
-      expect(absence).not_to respond_to(:start_meridiem=)
+      expect(event).not_to respond_to(:start_meridiem=)
     end
   end
 
   describe "#end_meridiem" do
     it "returns the initial end meridiem" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         end_meridiem: :am
       )
 
-      expect(absence.end_meridiem).to eq(:am)
+      expect(event.end_meridiem).to eq(:am)
     end
 
     it "is read-only" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         end_meridiem: :am
       )
 
-      expect(absence).not_to respond_to(:end_meridiem=)
+      expect(event).not_to respond_to(:end_meridiem=)
     end
   end
 
   describe "#matches_type?" do
-    it "returns true when the other absence is of the same type" do
-      absence = Absence.new(
+    it "returns true when the other event is of the same type" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.matches_type?(other)).to be(true)
+      expect(event.matches_type?(other)).to be(true)
     end
 
-    it "returns false when the other absence is of the a different type" do
-      absence = Absence.new(
+    it "returns false when the other event is of the a different type" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :sickness,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.matches_type?(other)).to be(false)
+      expect(event.matches_type?(other)).to be(false)
     end
   end
 
@@ -244,7 +244,7 @@ RSpec.describe Absence do
     [
       # 1 day gap
       {
-        name: "returns false when the other absence starts more than one day after the end of the subject",
+        name: "returns false when the other event starts more than one day after the end of the subject",
         other: {
           start_date: subject_end_date + 2,
           end_date: subject_end_date + 30
@@ -252,7 +252,7 @@ RSpec.describe Absence do
         expectation: false
       },
       {
-        name: "returns false when the other absence ends more than one day before the start of the subject",
+        name: "returns false when the other event ends more than one day before the start of the subject",
         other: {
           start_date: subject_end_date - 30,
           end_date: subject_end_date - 2
@@ -262,7 +262,7 @@ RSpec.describe Absence do
 
       # next/previous day
       {
-        name: "returns true when the other absence starts (AM) on the day after the end (PM) of the subject",
+        name: "returns true when the other event starts (AM) on the day after the end (PM) of the subject",
         other: {
           start_date: subject_end_date + 1,
           end_date: subject_end_date + 30,
@@ -274,7 +274,7 @@ RSpec.describe Absence do
         expectation: true
       },
       {
-        name: "returns true when the other absence ends (PM) on the day before the start (AM) of the subject",
+        name: "returns true when the other event ends (PM) on the day before the start (AM) of the subject",
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date - 1,
@@ -288,7 +288,7 @@ RSpec.describe Absence do
 
       # same day
       {
-        name: "returns true when the other absence starts (PM) on the same day as the end (AM) of the subject",
+        name: "returns true when the other event starts (PM) on the same day as the end (AM) of the subject",
         other: {
           start_date: subject_end_date,
           end_date: subject_end_date + 30,
@@ -300,7 +300,7 @@ RSpec.describe Absence do
         expectation: true
       },
       {
-        name: "returns true when the other absence ends (AM) on the same day as the start (PM) of the subject",
+        name: "returns true when the other event ends (AM) on the same day as the start (PM) of the subject",
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date,
@@ -314,7 +314,7 @@ RSpec.describe Absence do
 
       # same day with overlap
       {
-        name: "returns false when the other absence starts (AM) on the same day as the end (PM) of the subject",
+        name: "returns false when the other event starts (AM) on the same day as the end (PM) of the subject",
         other: {
           start_date: subject_end_date,
           end_date: subject_end_date + 30,
@@ -326,7 +326,7 @@ RSpec.describe Absence do
         expectation: false
       },
       {
-        name: "returns false when the other absence ends (PM) on the same day as the start (AM) of the subject",
+        name: "returns false when the other event ends (PM) on the same day as the start (AM) of the subject",
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date,
@@ -340,7 +340,7 @@ RSpec.describe Absence do
 
       # full day overlap
       {
-        name: "returns false when the other absence starts between the start and the end of the subject",
+        name: "returns false when the other event starts between the start and the end of the subject",
         other: {
           start_date: subject_start_date + 1,
           end_date: subject_end_date + 1
@@ -348,7 +348,7 @@ RSpec.describe Absence do
         expectation: false
       },
       {
-        name: "returns false when the other absence ends between the start and the end of the subject",
+        name: "returns false when the other event ends between the start and the end of the subject",
         other: {
           start_date: subject_start_date - 1,
           end_date: subject_end_date - 1
@@ -358,7 +358,7 @@ RSpec.describe Absence do
 
       # covered
       {
-        name: "returns false when the other absence is covered by the subject",
+        name: "returns false when the other event is covered by the subject",
         other: {
           start_date: subject_start_date + 1,
           end_date: subject_end_date - 1
@@ -366,7 +366,7 @@ RSpec.describe Absence do
         expectation: false
       },
       {
-        name: "returns false when the other absence covers the subject",
+        name: "returns false when the other event covers the subject",
         other: {
           start_date: subject_start_date - 1,
           end_date: subject_end_date + 1
@@ -375,14 +375,14 @@ RSpec.describe Absence do
       }
     ].each { |test_case|
       it test_case[:name] do
-        other = Absence.new(
+        other = Event.new(
           type: :holiday,
           start_date: test_case[:other][:start_date],
           end_date: test_case[:other][:end_date],
           start_meridiem: test_case[:other][:start_meridiem] || :am,
           end_meridiem: test_case[:other][:end_meridiem] || :pm
         )
-        absence = Absence.new(
+        event = Event.new(
           type: :holiday,
           start_date: subject_start_date,
           end_date: subject_end_date,
@@ -390,493 +390,493 @@ RSpec.describe Absence do
           end_meridiem: test_case.fetch(:subject, {})[:end_meridiem] || :pm
         )
 
-        expect(absence.adjacent_to?(other)).to be(test_case[:expectation])
+        expect(event.adjacent_to?(other)).to be(test_case[:expectation])
       end
     }
   end
 
   describe "#starts_before?" do
-    it "returns true when the other absence starts the day after the start of the subject" do
-      other = Absence.new(
+    it "returns true when the other event starts the day after the start of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date + 1,
         end_date: end_date + 30
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.starts_before?(other)).to be(true)
+      expect(event.starts_before?(other)).to be(true)
     end
 
-    it "returns true when the other absence starts (PM) on the same day as the start (AM) of the subject" do
-      other = Absence.new(
+    it "returns true when the other event starts (PM) on the same day as the start (AM) of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 30,
         start_meridiem: :pm
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :am
       )
 
-      expect(absence.starts_before?(other)).to be(true)
+      expect(event.starts_before?(other)).to be(true)
     end
 
-    it "returns false when the other absence starts (AM) on the same day as the start (PM) of the subject" do
-      other = Absence.new(
+    it "returns false when the other event starts (AM) on the same day as the start (PM) of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 30,
         start_meridiem: :am
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :pm
       )
 
-      expect(absence.starts_before?(other)).to be(false)
+      expect(event.starts_before?(other)).to be(false)
     end
 
-    it "returns false when the other absence starts the day before the start of the subject" do
-      other = Absence.new(
+    it "returns false when the other event starts the day before the start of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 1,
         end_date: end_date + 30
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.starts_before?(other)).to be(false)
+      expect(event.starts_before?(other)).to be(false)
     end
   end
 
   describe "#ends_after?" do
-    it "returns true when the other absence ends the day before the end of the subject" do
-      other = Absence.new(
+    it "returns true when the other event ends the day before the end of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date - 1
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.ends_after?(other)).to be(true)
+      expect(event.ends_after?(other)).to be(true)
     end
 
-    it "returns true when the other absence ends (AM) on the same day as the end (PM) of the subject" do
-      other = Absence.new(
+    it "returns true when the other event ends (AM) on the same day as the end (PM) of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date,
         end_meridiem: :am
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         end_meridiem: :pm
       )
 
-      expect(absence.ends_after?(other)).to be(true)
+      expect(event.ends_after?(other)).to be(true)
     end
 
-    it "returns false when the other absence ends (PM) on the same day as the end (AM) of the subject" do
-      other = Absence.new(
+    it "returns false when the other event ends (PM) on the same day as the end (AM) of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date,
         end_meridiem: :pm
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         end_meridiem: :am
       )
 
-      expect(absence.ends_after?(other)).to be(false)
+      expect(event.ends_after?(other)).to be(false)
     end
 
-    it "returns false when the other absence ends the day after the end of the subject" do
-      other = Absence.new(
+    it "returns false when the other event ends the day after the end of the subject" do
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date + 1
       )
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
 
-      expect(absence.ends_after?(other)).to be(false)
+      expect(event.ends_after?(other)).to be(false)
     end
   end
 
   describe "#covers?" do
-    it "returns true when the subject starts before and ends after the other absence" do
-      absence = Absence.new(
+    it "returns true when the subject starts before and ends after the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date + 1,
         end_date: end_date - 1
       )
 
-      expect(absence.covers?(other)).to be(true)
+      expect(event.covers?(other)).to be(true)
     end
 
-    it "returns true when the subject starts before and ends at the same time as the other absence" do
-      absence = Absence.new(
+    it "returns true when the subject starts before and ends at the same time as the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date + 1,
         end_date: end_date
       )
 
-      expect(absence.covers?(other)).to be(true)
+      expect(event.covers?(other)).to be(true)
     end
 
-    it "returns false when the subject starts before and ends before the other absence" do
-      absence = Absence.new(
+    it "returns false when the subject starts before and ends before the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date + 1,
         end_date: end_date + 1
       )
 
-      expect(absence.covers?(other)).to be(false)
+      expect(event.covers?(other)).to be(false)
     end
 
-    it "returns true when the subject starts at the same time as and ends after the other absence" do
-      absence = Absence.new(
+    it "returns true when the subject starts at the same time as and ends after the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date - 1
       )
 
-      expect(absence.covers?(other)).to be(true)
+      expect(event.covers?(other)).to be(true)
     end
 
-    it "returns false when the subject starts after and ends after the other absence" do
-      absence = Absence.new(
+    it "returns false when the subject starts after and ends after the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 1,
         end_date: end_date - 1
       )
 
-      expect(absence.covers?(other)).to be(false)
+      expect(event.covers?(other)).to be(false)
     end
 
-    it "returns false when the subject starts after and ends before the other absence" do
-      absence = Absence.new(
+    it "returns false when the subject starts after and ends before the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 1,
         end_date: end_date + 1
       )
 
-      expect(absence.covers?(other)).to be(false)
+      expect(event.covers?(other)).to be(false)
     end
   end
 
   describe "#overlaps?" do
-    it "returns false when the subject starts before and ends after the other absence" do
-      absence = Absence.new(
+    it "returns false when the subject starts before and ends after the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 1,
         end_date: end_date + 1
       )
 
-      expect(absence.overlaps?(other)).to be(false)
+      expect(event.overlaps?(other)).to be(false)
     end
 
-    it "returns true when the subject starts before and ends before the other absence" do
-      absence = Absence.new(
+    it "returns true when the subject starts before and ends before the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date - 1,
         end_date: end_date - 1
       )
 
-      expect(absence.overlaps?(other)).to be(true)
+      expect(event.overlaps?(other)).to be(true)
     end
 
-    it "returns true when the subject starts after and ends after the other absence" do
-      absence = Absence.new(
+    it "returns true when the subject starts after and ends after the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date + 1,
         end_date: end_date + 1
       )
 
-      expect(absence.overlaps?(other)).to be(true)
+      expect(event.overlaps?(other)).to be(true)
     end
 
-    it "returns false when the subject starts after and ends before the other absence" do
-      absence = Absence.new(
+    it "returns false when the subject starts after and ends before the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date + 1,
         end_date: end_date - 1
       )
 
-      expect(absence.overlaps?(other)).to be(false)
+      expect(event.overlaps?(other)).to be(false)
     end
   end
 
   describe "#mergeable_with?" do
-    it "returns false when the subject and other absence are of different types" do
-      absence = Absence.new(
+    it "returns false when the subject and other event are of different types" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:matches_type?).with(other) { false }
+      allow(event).to receive(:matches_type?).with(other) { false }
 
-      expect(absence.mergeable_with?(other)).to be(false)
+      expect(event.mergeable_with?(other)).to be(false)
     end
 
-    it "returns true when the subject and other absence are adjacent" do
-      absence = Absence.new(
+    it "returns true when the subject and other event are adjacent" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:matches_type?).with(other) { true }
-      allow(absence).to receive(:adjacent_to?).with(other) { true }
+      allow(event).to receive(:matches_type?).with(other) { true }
+      allow(event).to receive(:adjacent_to?).with(other) { true }
 
-      expect(absence.mergeable_with?(other)).to be(true)
+      expect(event.mergeable_with?(other)).to be(true)
     end
 
-    it "returns true when the subject and other absence overlap" do
-      absence = Absence.new(
+    it "returns true when the subject and other event overlap" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:matches_type?).with(other) { true }
-      allow(absence).to receive(:adjacent_to?).with(other) { false }
-      allow(absence).to receive(:overlaps?).with(other) { true }
+      allow(event).to receive(:matches_type?).with(other) { true }
+      allow(event).to receive(:adjacent_to?).with(other) { false }
+      allow(event).to receive(:overlaps?).with(other) { true }
 
-      expect(absence.mergeable_with?(other)).to be(true)
+      expect(event.mergeable_with?(other)).to be(true)
     end
 
-    it "returns true when the subject covers the other absence" do
-      absence = Absence.new(
+    it "returns true when the subject covers the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:matches_type?).with(other) { true }
-      allow(absence).to receive(:adjacent_to?).with(other) { false }
-      allow(absence).to receive(:overlaps?).with(other) { false }
-      allow(absence).to receive(:covers?).with(other) { true }
+      allow(event).to receive(:matches_type?).with(other) { true }
+      allow(event).to receive(:adjacent_to?).with(other) { false }
+      allow(event).to receive(:overlaps?).with(other) { false }
+      allow(event).to receive(:covers?).with(other) { true }
 
-      expect(absence.mergeable_with?(other)).to be(true)
+      expect(event.mergeable_with?(other)).to be(true)
     end
 
-    it "returns true when the other absence covers the subject" do
-      absence = Absence.new(
+    it "returns true when the other event covers the subject" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:matches_type?).with(other) { true }
-      allow(absence).to receive(:adjacent_to?).with(other) { false }
-      allow(absence).to receive(:overlaps?).with(other) { false }
-      allow(absence).to receive(:covers?).with(other) { false }
-      allow(other).to receive(:covers?).with(absence) { true }
+      allow(event).to receive(:matches_type?).with(other) { true }
+      allow(event).to receive(:adjacent_to?).with(other) { false }
+      allow(event).to receive(:overlaps?).with(other) { false }
+      allow(event).to receive(:covers?).with(other) { false }
+      allow(other).to receive(:covers?).with(event) { true }
 
-      expect(absence.mergeable_with?(other)).to be(true)
+      expect(event.mergeable_with?(other)).to be(true)
     end
 
-    it "returns false when the subject and other absence are not adjacent, overlapping, nor covering each other" do
-      absence = Absence.new(
+    it "returns false when the subject and other event are not adjacent, overlapping, nor covering each other" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:matches_type?).with(other) { true }
-      allow(absence).to receive(:adjacent_to?).with(other) { false }
-      allow(absence).to receive(:overlaps?).with(other) { false }
-      allow(absence).to receive(:covers?).with(other) { false }
-      allow(other).to receive(:covers?).with(absence) { false }
+      allow(event).to receive(:matches_type?).with(other) { true }
+      allow(event).to receive(:adjacent_to?).with(other) { false }
+      allow(event).to receive(:overlaps?).with(other) { false }
+      allow(event).to receive(:covers?).with(other) { false }
+      allow(other).to receive(:covers?).with(event) { false }
 
-      expect(absence.mergeable_with?(other)).to be(false)
+      expect(event.mergeable_with?(other)).to be(false)
     end
   end
 
   describe "#merge_with" do
     it "rejects an impossible merge" do
-      absence = Absence.new(
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:mergeable_with?).with(other) { false }
+      allow(event).to receive(:mergeable_with?).with(other) { false }
 
       expect {
-        absence.merge_with(other)
-      }.to raise_error("Cannot merge these absences")
+        event.merge_with(other)
+      }.to raise_error("Cannot merge these events")
     end
 
-    it "returns the subject when it covers the other absence" do
-      absence = Absence.new(
+    it "returns the subject when it covers the other event" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:mergeable_with?).with(other) { true }
-      allow(absence).to receive(:covers?).with(other) { true }
+      allow(event).to receive(:mergeable_with?).with(other) { true }
+      allow(event).to receive(:covers?).with(other) { true }
 
-      expect(absence.merge_with(other)).to be(absence)
+      expect(event.merge_with(other)).to be(event)
     end
 
-    it "returns the other absence when it covers the subject" do
-      absence = Absence.new(
+    it "returns the other event when it covers the subject" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date
       )
-      other = instance_double(Absence)
+      other = instance_double(Event)
 
-      allow(absence).to receive(:mergeable_with?).with(other) { true }
-      allow(absence).to receive(:covers?).with(other) { false }
-      allow(other).to receive(:covers?).with(absence) { true }
+      allow(event).to receive(:mergeable_with?).with(other) { true }
+      allow(event).to receive(:covers?).with(other) { false }
+      allow(other).to receive(:covers?).with(event) { true }
 
-      expect(absence.merge_with(other)).to be(other)
+      expect(event.merge_with(other)).to be(other)
     end
 
-    it "returns a new absence with the earliest start date and matching start meridiem" do
-      absence = Absence.new(
+    it "returns a new event with the earliest start date and matching start meridiem" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :pm
       )
-      before = Absence.new(
+      before = Event.new(
         type: :holiday,
         start_date: start_date - 3,
         end_date: end_date,
         start_meridiem: :am
       )
-      after = Absence.new(
+      after = Event.new(
         type: :holiday,
         start_date: start_date + 3,
         end_date: end_date,
         start_meridiem: :am
       )
 
-      new_before = absence.merge_with(before)
+      new_before = event.merge_with(before)
 
       expect(new_before.start_date).to eq(start_date - 3)
       expect(new_before.start_meridiem).to eq(:am)
 
-      new_after = absence.merge_with(after)
+      new_after = event.merge_with(after)
 
       expect(new_after.start_date).to eq(start_date)
       expect(new_after.start_meridiem).to eq(:pm)
     end
 
-    it "returns a new absence with the latest end date and matching end meridiem" do
-      absence = Absence.new(
+    it "returns a new event with the latest end date and matching end meridiem" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         end_meridiem: :am
       )
-      before = Absence.new(
+      before = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date - 3,
         end_meridiem: :pm
       )
-      after = Absence.new(
+      after = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 3,
         end_meridiem: :pm
       )
 
-      new_before = absence.merge_with(before)
+      new_before = event.merge_with(before)
 
       expect(new_before.end_date).to eq(end_date)
       expect(new_before.end_meridiem).to eq(:am)
 
-      new_after = absence.merge_with(after)
+      new_after = event.merge_with(after)
 
       expect(new_after.end_date).to eq(end_date + 3)
       expect(new_after.end_meridiem).to eq(:pm)
@@ -884,15 +884,15 @@ RSpec.describe Absence do
   end
 
   describe "#==" do
-    it "returns true when the other absence has the same initializer properties as the subject" do
-      absence = Absence.new(
+    it "returns true when the other event has the same initializer properties as the subject" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :pm,
         end_meridiem: :am
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
@@ -900,18 +900,18 @@ RSpec.describe Absence do
         end_meridiem: :am
       )
 
-      expect(absence == other).to be(true)
+      expect(event == other).to be(true)
     end
 
-    it "returns false when the other absence has different initializer properties from the subject" do
-      absence = Absence.new(
+    it "returns false when the other event has different initializer properties from the subject" do
+      event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
         start_meridiem: :pm,
         end_meridiem: :am
       )
-      other = Absence.new(
+      other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
@@ -919,7 +919,7 @@ RSpec.describe Absence do
         end_meridiem: :pm
       )
 
-      expect(absence == other).to be(false)
+      expect(event == other).to be(false)
     end
   end
 end

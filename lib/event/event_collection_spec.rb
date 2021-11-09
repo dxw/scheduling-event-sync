@@ -1,62 +1,62 @@
 require "date"
-require_relative "./absence"
-require_relative "./absence_collection"
+require_relative "./event"
+require_relative "./event_collection"
 
-RSpec.describe AbsenceCollection do
-  describe "#absences" do
-    it "returns the absences, sorted by start date" do
-      earliest = Absence.new(
+RSpec.describe EventCollection do
+  describe "#events" do
+    it "returns the events, sorted by start date" do
+      earliest = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1)
       )
-      middle = Absence.new(
+      middle = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 10),
         end_date: Date.new(2000, 1, 14)
       )
-      latest = Absence.new(
+      latest = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 2, 10),
         end_date: Date.new(2000, 3, 1)
       )
 
-      collection = AbsenceCollection.new([middle, latest, earliest])
+      collection = EventCollection.new([middle, latest, earliest])
 
-      expect(collection.absences).to eq([earliest, middle, latest])
+      expect(collection.events).to eq([earliest, middle, latest])
     end
 
     it "is read-only" do
-      collection = AbsenceCollection.new([])
+      collection = EventCollection.new([])
 
-      expect(collection).not_to respond_to(:absences=)
+      expect(collection).not_to respond_to(:events=)
     end
   end
 
   describe "#all_changes_from" do
     let(:ours_a) {
-      Absence.new(
+      Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1)
       )
     }
     let(:ours_b) {
-      Absence.new(
+      Event.new(
         type: :sickness,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1)
       )
     }
     let(:ours_c) {
-      Absence.new(
+      Event.new(
         type: :sickness,
         start_date: Date.new(2000, 1, 4),
         end_date: Date.new(2000, 3, 1)
       )
     }
     let(:theirs_a) {
-      Absence.new(
+      Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1),
@@ -64,7 +64,7 @@ RSpec.describe AbsenceCollection do
       )
     }
     let(:theirs_b) {
-      Absence.new(
+      Event.new(
         type: :sickness,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1),
@@ -72,21 +72,21 @@ RSpec.describe AbsenceCollection do
       )
     }
     let(:theirs_c) {
-      Absence.new(
+      Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 4),
         end_date: Date.new(2000, 3, 1)
       )
     }
     let(:shared_a) {
-      Absence.new(
+      Event.new(
         type: :holiday,
         start_date: Date.new(2000, 4, 1),
         end_date: Date.new(2000, 5, 1)
       )
     }
     let(:shared_b) {
-      Absence.new(
+      Event.new(
         type: :holiday,
         start_date: Date.new(2000, 5, 1),
         end_date: Date.new(2000, 6, 1)
@@ -94,7 +94,7 @@ RSpec.describe AbsenceCollection do
     }
 
     let(:ours) {
-      AbsenceCollection.new([
+      EventCollection.new([
         ours_a,
         ours_b,
         ours_c,
@@ -103,7 +103,7 @@ RSpec.describe AbsenceCollection do
       ])
     }
     let(:theirs) {
-      AbsenceCollection.new([
+      EventCollection.new([
         theirs_a,
         theirs_b,
         theirs_c,
@@ -112,38 +112,38 @@ RSpec.describe AbsenceCollection do
       ])
     }
 
-    it "returns all absences in ours not found in theirs as additions" do
+    it "returns all events in ours not found in theirs as additions" do
       result = ours.all_changes_from(theirs)
 
-      expect(result[:added].absences).to eq([ours_a, ours_b, ours_c])
+      expect(result[:added].events).to eq([ours_a, ours_b, ours_c])
     end
 
-    it "returns all absences in theirs not found in ours as removals" do
+    it "returns all events in theirs not found in ours as removals" do
       result = ours.all_changes_from(theirs)
 
-      expect(result[:removed].absences).to eq([theirs_a, theirs_b, theirs_c])
+      expect(result[:removed].events).to eq([theirs_a, theirs_b, theirs_c])
     end
 
-    it "doesn't include any shared absences in additions and removals" do
+    it "doesn't include any shared events in additions and removals" do
       result = ours.all_changes_from(theirs)
 
-      expect(result[:added].absences).not_to include(shared_a)
-      expect(result[:added].absences).not_to include(shared_b)
-      expect(result[:removed].absences).not_to include(shared_a)
-      expect(result[:removed].absences).not_to include(shared_b)
+      expect(result[:added].events).not_to include(shared_a)
+      expect(result[:added].events).not_to include(shared_b)
+      expect(result[:removed].events).not_to include(shared_a)
+      expect(result[:removed].events).not_to include(shared_b)
     end
 
-    it "returns all absences in ours after compression not found in theirs as additions when compression is enabled" do
+    it "returns all events in ours after compression not found in theirs as additions when compression is enabled" do
       result = ours.all_changes_from(theirs, compress: true)
 
-      expect(result[:added].absences).to eq([
+      expect(result[:added].events).to eq([
         ours_a,
-        Absence.new(
+        Event.new(
           type: ours_b.type,
           start_date: ours_b.start_date,
           end_date: ours_c.end_date
         ),
-        Absence.new(
+        Event.new(
           type: shared_a.type,
           start_date: shared_a.start_date,
           end_date: shared_b.end_date
@@ -151,59 +151,59 @@ RSpec.describe AbsenceCollection do
       ])
     end
 
-    it "returns all absences in theirs not found in ours after compression as removals when compression is enabled" do
+    it "returns all events in theirs not found in ours after compression as removals when compression is enabled" do
       result = ours.all_changes_from(theirs, compress: true)
 
-      expect(result[:removed].absences).to eq([
+      expect(result[:removed].events).to eq([
         theirs_a, theirs_b, theirs_c, shared_a, shared_b
       ])
     end
   end
 
   describe "#compress!" do
-    it "modifies wrapped absences array to merge all mergeable items" do
-      mergeable_holiday_1a = Absence.new(
+    it "modifies wrapped events array to merge all mergeable items" do
+      mergeable_holiday_1a = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1)
       )
-      mergeable_holiday_1b = Absence.new(
+      mergeable_holiday_1b = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 1, 10),
         end_date: Date.new(2000, 1, 14)
       )
-      mergeable_holiday_2a = Absence.new(
+      mergeable_holiday_2a = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 3, 1),
         end_date: Date.new(2000, 4, 1)
       )
-      mergeable_holiday_2b = Absence.new(
+      mergeable_holiday_2b = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 4, 1),
         end_date: Date.new(2000, 8, 1)
       )
-      mergeable_holiday_2c = Absence.new(
+      mergeable_holiday_2c = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 5, 2),
         end_date: Date.new(2000, 6, 1)
       )
-      mergeable_holiday_2d = Absence.new(
+      mergeable_holiday_2d = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 3, 2),
         end_date: Date.new(2000, 7, 1)
       )
-      solo_holiday = Absence.new(
+      solo_holiday = Event.new(
         type: :holiday,
         start_date: Date.new(2000, 8, 3),
         end_date: Date.new(2000, 9, 1)
       )
-      unmergeable_sickness = Absence.new(
+      unmergeable_sickness = Event.new(
         type: :sickness,
         start_date: Date.new(2000, 1, 10),
         end_date: Date.new(2000, 5, 1)
       )
 
-      collection = AbsenceCollection.new([
+      collection = EventCollection.new([
         mergeable_holiday_1a,
         mergeable_holiday_1b,
         mergeable_holiday_2a,
@@ -216,10 +216,10 @@ RSpec.describe AbsenceCollection do
 
       collection.compress!
 
-      expect(collection.absences).to eq([
+      expect(collection.events).to eq([
         mergeable_holiday_1a,
         unmergeable_sickness,
-        Absence.new(
+        Event.new(
           type: :holiday,
           start_date: Date.new(2000, 3, 1),
           end_date: Date.new(2000, 8, 1)
@@ -229,7 +229,7 @@ RSpec.describe AbsenceCollection do
     end
 
     it "returns the subject" do
-      collection = AbsenceCollection.new([])
+      collection = EventCollection.new([])
 
       expect(collection.compress!).to be(collection)
     end

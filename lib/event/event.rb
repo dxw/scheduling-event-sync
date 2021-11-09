@@ -1,7 +1,7 @@
 require "date"
 
-class Absence
-  TYPES = [:holiday, :sickness, :other_planned, :other_unplanned].freeze
+class Event
+  TYPES = [:holiday, :sickness, :other_planned_leave, :other_unplanned_leave].freeze
   MERIDIEMS = [:am, :pm].freeze
 
   attr_reader :type, :start_date, :end_date, :start_meridiem, :end_meridiem
@@ -13,7 +13,7 @@ class Absence
     start_meridiem: :am,
     end_meridiem: :pm
   )
-    raise "#{type} is not a recognized absence type" unless TYPES.include?(type)
+    raise "#{type} is not a recognized event type" unless TYPES.include?(type)
     raise "#{start_date} is not a date" unless start_date.is_a?(Date)
     raise "#{end_date} is not a date" unless end_date.is_a?(Date)
 
@@ -26,14 +26,14 @@ class Absence
     end
 
     if end_date < start_date
-      raise "An absence cannot end before it starts"
+      raise "An event cannot end before it starts"
     end
 
     if start_date == end_date
       if start_meridiem == end_meridiem
-        raise "An absence cannot end in the same meridiem on the same day as it starts"
+        raise "An event cannot end in the same meridiem on the same day as it starts"
       elsif start_meridiem == :pm && end_meridiem == :am
-        raise "An absence cannot end before it starts"
+        raise "An event cannot end before it starts"
       end
     end
 
@@ -108,7 +108,7 @@ class Absence
   def overlaps?(other)
     prequel =
       starts_before?(other) &&
-      other.ends_after?(self) &&
+      !ends_after?(other) &&
       (
         other.start_date < end_date ||
         (
@@ -117,7 +117,7 @@ class Absence
         )
       )
     sequel =
-      other.starts_before?(self) &&
+      !starts_before?(other) &&
       ends_after?(other) &&
       (
         start_date < other.end_date ||
@@ -141,7 +141,7 @@ class Absence
 
   def merge_with(other)
     unless mergeable_with?(other)
-      raise "Cannot merge these absences"
+      raise "Cannot merge these events"
     end
 
     return self if covers?(other)
@@ -162,7 +162,7 @@ class Absence
       new_end_meridiem = other.end_meridiem
     end
 
-    Absence.new(
+    Event.new(
       type: type,
       start_date: new_start_date,
       end_date: new_end_date,
