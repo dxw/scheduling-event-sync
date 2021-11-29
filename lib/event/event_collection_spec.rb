@@ -249,4 +249,113 @@ RSpec.describe EventCollection do
       expect(collection.events).to be(events)
     end
   end
+
+  describe "#split_half_days" do
+    it "returns a new collection with all half day events split from full day events" do
+      holiday_starting_with_half_day = Event.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 2),
+        start_half_day: true
+      )
+      holiday_ending_with_half_day = Event.new(
+        type: :holiday,
+        start_date: Date.new(2001, 1, 1),
+        end_date: Date.new(2001, 2, 2),
+        end_half_day: true
+      )
+      holiday_with_both_half_days = Event.new(
+        type: :holiday,
+        start_date: Date.new(2002, 1, 1),
+        end_date: Date.new(2002, 2, 2),
+        start_half_day: true,
+        end_half_day: true
+      )
+      holiday_with_no_half_days = Event.new(
+        type: :holiday,
+        start_date: Date.new(2003, 1, 1),
+        end_date: Date.new(2003, 2, 2)
+      )
+
+      collection = EventCollection.new([
+        holiday_starting_with_half_day,
+        holiday_ending_with_half_day,
+        holiday_with_both_half_days,
+        holiday_with_no_half_days
+      ])
+
+      result = collection.split_half_days
+
+      expect(result.events).to eq([
+        # holiday_starting_with_half_day
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2000, 1, 1),
+          end_date: Date.new(2000, 1, 1),
+          start_half_day: true,
+          end_half_day: true
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2000, 1, 2),
+          end_date: Date.new(2000, 2, 2)
+        ),
+
+        # holiday_ending_with_half_day
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2001, 1, 1),
+          end_date: Date.new(2001, 2, 1)
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2001, 2, 2),
+          end_date: Date.new(2001, 2, 2),
+          start_half_day: true,
+          end_half_day: true
+        ),
+
+        # holiday_with_both_half_days
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2002, 1, 1),
+          end_date: Date.new(2002, 1, 1),
+          start_half_day: true,
+          end_half_day: true
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2002, 1, 2),
+          end_date: Date.new(2002, 2, 1)
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2002, 2, 2),
+          end_date: Date.new(2002, 2, 2),
+          start_half_day: true,
+          end_half_day: true
+        ),
+
+        holiday_with_no_half_days
+      ])
+    end
+
+    it "doesn't modify the events of the original" do
+      holiday_with_both_half_days = Event.new(
+        type: :holiday,
+        start_date: Date.new(2002, 1, 1),
+        end_date: Date.new(2002, 2, 2),
+        start_half_day: true,
+        end_half_day: true
+      )
+
+      collection = EventCollection.new([holiday_with_both_half_days])
+
+      events = collection.events
+
+      collection.split_half_days
+
+      expect(collection.events).to be(events)
+    end
+  end
 end
