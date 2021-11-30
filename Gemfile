@@ -7,6 +7,7 @@ gem "memo_wise"
 gem "productive"
 
 group :development do
+  gem "rake"
   gem "standard"
 end
 
