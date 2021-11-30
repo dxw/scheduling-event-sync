@@ -6,7 +6,15 @@ class ProductiveClient
   class << self
     prepend MemoWise
 
-    DEFAULT_WORKING_HOURS = 7
+    DEFAULT_WORKING_HOURS = [
+      7,
+      7,
+      7,
+      7,
+      7,
+      0,
+      0
+    ].freeze
 
     attr_reader :dry_run
 
@@ -47,12 +55,13 @@ class ProductiveClient
             end_date = booking.ended_on.to_date
 
             half_day = if start_date == end_date
-              working_minutes = work_day_length(
+              working_time = daily_working_minutes(
                 person_id: person_id,
-                on: start_date
+                after: start_date,
+                before: end_date
               )
 
-              booking.time <= working_minutes / 2
+              booking.time <= working_time / 2
             else
               false
             end
@@ -100,15 +109,16 @@ class ProductiveClient
       }
 
       changeset[:added].events.each { |event|
-        working_minutes = work_day_length(
+        working_time = daily_working_minutes(
           person_id: person_id,
-          on: event.start_date
+          after: event.start_date,
+          before: event.end_date
         )
 
         time =
           event.start_half_day || event.end_half_day ?
-          working_minutes / 2 :
-          working_minutes
+          working_time / 2 :
+          working_time
 
         if dry_run
           puts "#{email}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
@@ -143,27 +153,40 @@ class ProductiveClient
     end
     memo_wise :person
 
-    def salary(person_id:, on:)
+    def salaries(person_id:, after:, before:)
       Productive::Salary
         .where(
           person_id: person_id,
-          after: on,
-          before: on
+          after: after,
+          before: before
         )
-        .first
+        .all
     end
-    memo_wise :salary
+    memo_wise :salaries
 
-    def work_day_length(person_id:, on:)
-      working_hours = salary(
-        person_id: person_id,
-        on: on
-      )
-        &.working_hours
-        &.[](on.wday - 1)
+    def working_hours(person_id:, after:, before:)
+      salary = salaries(person_id: person_id, after: after, before: before)
+        .find { |salary|
+          next if salary.nil?
 
-      (working_hours.nil? ? DEFAULT_WORKING_HOURS : working_hours) * 60
+          (0..7).find { |index|
+            salary.working_hours[index] > 0
+          }
+        }
+
+      return DEFAULT_WORKING_HOURS if salary.nil?
+
+      salary.working_hours
     end
-    memo_wise :work_day_length
+    memo_wise :working_hours
+
+    def daily_working_minutes(person_id:, after:, before:)
+      hours = working_hours(person_id: person_id, after: after, before: before)
+
+      return if hours.nil?
+
+      hours.max * 60
+    end
+    memo_wise :daily_working_minutes
   end
 end
