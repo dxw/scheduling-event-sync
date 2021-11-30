@@ -152,11 +152,10 @@ class ProductiveClient
         person_id: person_id,
         on: on
       )
-        .working_hours[on.wday - 1]
+        &.working_hours
+        &.[](on.wday - 1)
 
-      return if working_hours.nil?
-
-      working_hours * 60
+      (working_hours.nil? ? DEFAULT_WORKING_HOURS : working_hours) * 60
     end
     memo_wise :work_day_length
   end
