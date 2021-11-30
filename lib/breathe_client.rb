@@ -22,7 +22,7 @@ class BreatheClient
         events = absences_by_email[email]
           .map { |absence|
             type = event_types.key(absence.type)
-            type = :other_planned_leave if type.nil?
+            type = :other_leave if type.nil?
 
             start_date = absence.start_date.to_date
             end_date = absence.end_date.to_date

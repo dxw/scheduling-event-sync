@@ -16,7 +16,7 @@ namespace :productive do
       api_key: ENV.fetch("PRODUCTIVE_API_KEY"),
       event_ids: {
         holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
-        other_planned_leave: ENV.fetch("PRODUCTIVE_OTHER_PLANNED_LEAVE_EVENT_ID")
+        other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
       },
       dry_run: args[:dry_run]
     )
@@ -68,7 +68,7 @@ namespace :breathe do
       api_key: ENV.fetch("PRODUCTIVE_API_KEY"),
       event_ids: {
         holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
-        other_planned_leave: ENV.fetch("PRODUCTIVE_OTHER_PLANNED_LEAVE_EVENT_ID")
+        other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
       },
       dry_run: args[:dry_run]
     )
