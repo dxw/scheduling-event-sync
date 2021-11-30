@@ -59,7 +59,11 @@ namespace :breathe do
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
       event_types: {
-        holiday: ENV.fetch("BREATHE_HOLIDAY_EVENT_TYPE")
+        holiday: ENV.fetch("BREATHE_HOLIDAY_EVENT_TYPE"),
+        other_leave: ENV.fetch("BREATHE_OTHER_LEAVE_EVENT_TYPE")
+      },
+      event_reason_types: {
+        ignored: ENV.fetch("BREATHE_IGNORED_EVENT_REASON_TYPES").split(",")
       }
     )
 

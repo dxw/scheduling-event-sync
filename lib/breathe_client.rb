@@ -6,11 +6,12 @@ class BreatheClient
   class << self
     prepend MemoWise
 
-    def configure(api_key:, event_types:)
+    def configure(api_key:, event_types:, event_reason_types:)
       reset_memo_wise
 
       @client = Breathe::Client.new(api_key: api_key, auto_paginate: true)
       @event_types = event_types
+      @event_reason_types = event_reason_types
     end
 
     def events(after:)
@@ -21,6 +22,13 @@ class BreatheClient
       absences_by_email.keys.each_with_object({}) { |email, hash|
         events = absences_by_email[email]
           .map { |absence|
+            leave_reason = event_reason_types
+              .keys
+              .find { |reason|
+                event_reason_types[reason].include?(absence.leave_reason&.name)
+              }
+            next if leave_reason == :ignored
+
             type = event_types.key(absence.type)
             type = :other_leave if type.nil?
 
@@ -46,7 +54,7 @@ class BreatheClient
 
     private
 
-    attr_reader :client, :event_types
+    attr_reader :client, :event_types, :event_reason_types
 
     def absences(after:)
       client
