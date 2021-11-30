@@ -40,12 +40,10 @@ class ProductiveClient
             end_date = booking.ended_on.to_date
 
             half_day = if start_date == end_date
-              working_hours = salary(
+              working_minutes = work_day_length(
                 person_id: person_id,
                 on: start_date
               )
-                .working_hours[start_date.wday - 1]
-              working_minutes = (working_hours || DEFAULT_WORKING_HOURS) * 60
 
               booking.time <= working_minutes / 2
             else
@@ -66,6 +64,58 @@ class ProductiveClient
       }
     end
     memo_wise :events
+
+    def update_events_for(email, changeset)
+      person_id = person(email: email).id
+
+      changeset[:removed].events.each { |event|
+        event_id = event_ids[event.type]
+
+        matching_bookings = Productive::Booking
+          .where(
+            event_id: event_id,
+            after: event.start_date,
+            before: event.end_date
+          )
+          .all
+          .select { |booking|
+            booking.started_on.to_date == event.start_date &&
+              booking.ended_on.to_date == event.end_date
+          }
+
+        matching_bookings.each { |booking|
+          if dry_run
+            puts "#{email}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
+          else
+            booking.destroy
+          end
+        }
+      }
+
+      changeset[:added].events.each { |event|
+        working_minutes = work_day_length(
+          person_id: person_id,
+          on: event.start_date
+        )
+
+        time =
+          event.start_half_day || event.end_half_day ?
+          working_minutes / 2 :
+          working_minutes
+
+        if dry_run
+          puts "#{email}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
+        else
+          Productive::Booking.create(
+            person_id: person_id,
+            event_id: event_id,
+            started_on: event.start_date,
+            ended_on: event.end_date,
+            time: time
+          )
+        end
+      }
+    end
 
     private
 
@@ -96,5 +146,18 @@ class ProductiveClient
         .first
     end
     memo_wise :salary
+
+    def work_day_length(person_id:, on:)
+      working_hours = salary(
+        person_id: person_id,
+        on: on
+      )
+        .working_hours[on.wday - 1]
+
+      return if working_hours.nil?
+
+      working_hours * 60
+    end
+    memo_wise :work_day_length
   end
 end
