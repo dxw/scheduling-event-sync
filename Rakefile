@@ -38,6 +38,16 @@ namespace :productive do
       puts "#{email}: done"
     }
   end
+
+  task :list_event_types do
+    ProductiveClient.configure(
+      account_id: ENV.fetch("PRODUCTIVE_ACCOUNT_ID"),
+      api_key: ENV.fetch("PRODUCTIVE_API_KEY"),
+      event_ids: {}
+    )
+
+    puts ProductiveClient.event_types
+  end
 end
 
 namespace :breathe do

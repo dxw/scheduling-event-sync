@@ -22,6 +22,13 @@ class ProductiveClient
       @dry_run = dry_run
     end
 
+    def event_types
+      Productive::Event.all.map.each_with_object({}) { |event, hash|
+        hash[event.name] = event.id
+      }
+    end
+    memo_wise :event_types
+
     def events(after:)
       bookings_by_email = bookings(after: after).group_by { |booking|
         booking.person.email.downcase
