@@ -8,7 +8,9 @@ class ProductiveClient
 
     DEFAULT_WORKING_HOURS = 7
 
-    def configure(account_id:, api_key:, event_ids:)
+    attr_reader :dry_run
+
+    def configure(account_id:, api_key:, event_ids:, dry_run: true)
       reset_memo_wise
 
       Productive.configure do |config|
@@ -17,6 +19,7 @@ class ProductiveClient
       end
 
       @event_ids = event_ids
+      @dry_run = dry_run
     end
 
     def events(after:)
