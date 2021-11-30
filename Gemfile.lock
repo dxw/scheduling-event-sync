@@ -12,6 +12,8 @@ GEM
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
+    breathe (0.3.3)
+      sawyer (~> 0.8.2)
     concurrent-ruby (1.1.9)
     diff-lcs (1.4.4)
     dotenv (2.7.6)
@@ -73,6 +75,9 @@ GEM
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.11.0)
+    sawyer (0.8.2)
+      addressable (>= 2.3.5)
+      faraday (> 0.8, < 2.0)
     standard (1.4.0)
       rubocop (= 1.22.3)
       rubocop-performance (= 1.11.5)
@@ -85,6 +90,7 @@ PLATFORMS
   arm64-darwin-20
 
 DEPENDENCIES
+  breathe
   dotenv
   memo_wise
   productive
