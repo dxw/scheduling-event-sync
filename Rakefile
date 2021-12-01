@@ -16,7 +16,7 @@ namespace :productive do
       api_key: ENV.fetch("PRODUCTIVE_API_KEY"),
       event_ids: {
         holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
-        other_planned_leave: ENV.fetch("PRODUCTIVE_OTHER_PLANNED_LEAVE_EVENT_ID")
+        other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
       },
       dry_run: args[:dry_run]
     )
@@ -59,7 +59,11 @@ namespace :breathe do
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
       event_types: {
-        holiday: ENV.fetch("BREATHE_HOLIDAY_EVENT_TYPE")
+        holiday: ENV.fetch("BREATHE_HOLIDAY_EVENT_TYPE"),
+        other_leave: ENV.fetch("BREATHE_OTHER_LEAVE_EVENT_TYPE")
+      },
+      event_reason_types: {
+        ignored: ENV.fetch("BREATHE_IGNORED_EVENT_REASON_TYPES").split(",")
       }
     )
 
@@ -68,7 +72,7 @@ namespace :breathe do
       api_key: ENV.fetch("PRODUCTIVE_API_KEY"),
       event_ids: {
         holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
-        other_planned_leave: ENV.fetch("PRODUCTIVE_OTHER_PLANNED_LEAVE_EVENT_ID")
+        other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
       },
       dry_run: args[:dry_run]
     )

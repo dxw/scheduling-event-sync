@@ -4,8 +4,7 @@ class Event
   TYPES = [
     :holiday,
     :sickness,
-    :other_planned_leave,
-    :other_unplanned_leave
+    :other_leave
   ].freeze
 
   attr_reader :type, :start_date, :end_date, :start_half_day, :end_half_day
