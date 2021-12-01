@@ -16,13 +16,15 @@ class BreatheClient
 
     def events(after:)
       absence = absence_events(after: after)
+      sickness = sickness_events(after: after)
       training = training_events(after: after)
 
-      emails = absence.keys | training.keys
+      emails = absence.keys | sickness.keys | training.keys
 
       emails.each_with_object({}) { |email, hash|
         events =
           (absence[email]&.events || []) +
+          (sickness[email]&.events || []) +
           (training[email]&.events || [])
 
         hash[email] = EventCollection.new(events)
@@ -67,6 +69,37 @@ class BreatheClient
       }
     end
     memo_wise :absence_events
+
+    def sickness_events(after:)
+      sicknesses_by_email = sicknesses(after: after).group_by { |sickness|
+        id = sickness[:employee][:id]
+        e = employees.find { |employee| employee[:id] == id }
+
+        e[:email]
+      }
+
+      sicknesses_by_email.keys.each_with_object({}) { |email, hash|
+        events = sicknesses_by_email[email]
+          .map { |sickness|
+            start_date = sickness[:start_date].to_date
+            end_date = sickness[:end_date]&.to_date || Date.today
+            start_half_day = sickness[:half_start]
+            end_half_day = sickness[:half_end]
+
+            Event.new(
+              type: :sickness,
+              start_date: start_date,
+              end_date: end_date,
+              start_half_day: start_half_day,
+              end_half_day: end_half_day
+            )
+          }
+          .compact
+
+        hash[email] = EventCollection.new(events)
+      }
+    end
+    memo_wise :sickness_events
 
     def training_events(after:)
       trainings_by_email = trainings(after: after).group_by { |training|
@@ -117,6 +150,19 @@ class BreatheClient
         .data[:absences]
     end
     memo_wise :absences
+
+    def sicknesses(after:)
+      client
+        .sicknesses
+        .list(
+          start_date: after,
+          exclude_cancelled_sicknesses: true
+        )
+        .response
+        .data
+        .to_h[:sicknesses]
+    end
+    memo_wise :sicknesses
 
     def trainings(after:)
       client
