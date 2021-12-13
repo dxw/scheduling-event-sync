@@ -1,0 +1,162 @@
+{
+  "data": {
+    "id": "41578",
+    "type": "events",
+    "attributes": {
+      "name": "Holiday",
+      "event_type_id": 1,
+      "icon_id": "parasol",
+      "color_id": 3,
+      "archived_at": null,
+      "limitation_type_id": 2
+    },
+    "relationships": {
+      "organization": {
+        "data": {
+          "type": "organizations",
+          "id": 15071
+        }
+      }
+    }
+  },
+  "meta": {
+    "organization_features": {
+      "custom_fields": {
+        "type": "metered",
+        "limit": 15,
+        "used": 1
+      },
+      "custom_fields_per_project": {
+        "type": "metered",
+        "limit": 10,
+        "used": 0
+      },
+      "public_custom_reports": {
+        "type": "metered",
+        "limit": 100,
+        "used": 37
+      },
+      "private_custom_reports": {
+        "type": "metered",
+        "limit": 30,
+        "used": 0
+      },
+      "scheduling_placeholders": {
+        "type": "metered",
+        "limit": 5,
+        "used": 3
+      },
+      "multigrouping": {
+        "type": "switch",
+        "available": true
+      },
+      "client_access_to_budgets": {
+        "type": "switch",
+        "available": true
+      },
+      "subsidiaries": {
+        "type": "switch",
+        "available": true
+      },
+      "time_approvals": {
+        "type": "switch",
+        "available": true
+      },
+      "expenses_approvals": {
+        "type": "switch",
+        "available": true
+      },
+      "timeoff_approvals": {
+        "type": "switch",
+        "available": true
+      },
+      "autotracking": {
+        "type": "switch",
+        "available": true
+      },
+      "forecasting": {
+        "type": "switch",
+        "available": true
+      },
+      "webhooks": {
+        "type": "switch",
+        "available": true
+      },
+      "table_pivoting": {
+        "type": "switch",
+        "available": true
+      },
+      "formula_fields": {
+        "type": "switch",
+        "available": true
+      },
+      "single_sign_on": {
+        "type": "switch",
+        "available": true
+      },
+      "duplicate_tasks": {
+        "type": "switch",
+        "available": true
+      },
+      "billable_time_rounding": {
+        "type": "switch",
+        "available": true
+      },
+      "payment_sync": {
+        "type": "switch",
+        "available": true
+      },
+      "booking_methods": {
+        "type": "switch",
+        "available": true
+      },
+      "import_tasks_csv": {
+        "type": "switch",
+        "available": true
+      },
+      "reactions": {
+        "type": "switch",
+        "available": true
+      },
+      "time_week_view": {
+        "type": "switch",
+        "available": true
+      },
+      "subtasks": {
+        "type": "switch",
+        "available": true
+      },
+      "time_calendar_layout": {
+        "type": "switch",
+        "available": true
+      },
+      "theming": {
+        "type": "switch",
+        "available": true
+      },
+      "remove_branding": {
+        "type": "switch",
+        "available": true
+      },
+      "custom_invoicing_email": {
+        "type": "switch",
+        "available": true
+      },
+      "google_calendar_layout": {
+        "type": "switch",
+        "available": true
+      },
+      "pulse": {
+        "type": "switch",
+        "available": true
+      }
+    },
+    "settings": {
+      "systemFlags": {
+        "setting_type": "systemFlags",
+        "value": "[\"bookingFormAssigneeField\",\"editorStrike\",\"exactCountrySelect\",\"feedFiltering\",\"formulaAggregations\",\"impersonateWithWriteAccess\",\"invoiceTimesheet\",\"invoiceWithTimeEntriesPdf\",\"legacySwitchPage\",\"mainSidebarQuickAdd\",\"multiselect_custom_field\",\"myTimeCalendar\",\"priceListDescription\",\"projectNavbar\",\"schedulingFilters\",\"seat_based_pricing\",\"skippableValidationErrors\",\"timeEntriesBulkEditProjectPicker\",\"timeEntriesVs\",\"todoAssigneeSameAction\",\"xeroOauth2\"]",
+        "updated_at": "2021-04-29T13:31:51.877+02:00"
+      }
+    }
+  }
+}

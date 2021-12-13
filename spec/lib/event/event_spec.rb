@@ -1,5 +1,5 @@
 require "date"
-require_relative "./event"
+require_relative "../../../lib/event/event"
 
 RSpec.describe Event do
   let(:start_date) { Date.new(2000, 1, 1) }

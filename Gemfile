@@ -6,6 +6,7 @@ gem "breathe"
 gem "dotenv"
 gem "memo_wise"
 gem "productive"
+gem "pry"
 
 group :development do
   gem "rake"
@@ -14,4 +15,7 @@ end
 
 group :test do
   gem "rspec"
+  gem "webmock"
+  gem "factory_bot"
+  gem "ffaker"
 end

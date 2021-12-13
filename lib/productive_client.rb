@@ -1,6 +1,8 @@
 require "active_support/all"
 require "memo_wise"
 require "productive"
+require "dotenv"
+Dotenv.load
 
 class ProductiveClient
   class << self
