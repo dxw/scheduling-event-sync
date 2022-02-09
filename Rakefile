@@ -6,10 +6,21 @@ require_relative "./lib/event/event_collection"
 require_relative "./lib/breathe_client"
 require_relative "./lib/productive_client"
 
+def to_bool(arg)
+  return true if arg == true || arg =~ (/(true|t|yes|y|1)$/i)
+  return false if arg == false || arg =~ (/(false|f|no|n|0)$/i)
+
+  raise ArgumentError.new("Unable to convert value to boolean: \"#{arg}\"")
+end
+
 namespace :productive do
   desc "Compress all compressible managed events on Productive"
   task :compress, [:dry_run] do |t, args|
     args.with_defaults(dry_run: true)
+
+    dry_run = to_bool(args[:dry_run])
+
+    puts "Doing a dry run!" if dry_run
 
     ProductiveClient.configure(
       account_id: ENV.fetch("PRODUCTIVE_ACCOUNT_ID"),
@@ -18,7 +29,7 @@ namespace :productive do
         holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
         other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
       },
-      dry_run: args[:dry_run]
+      dry_run: dry_run
     )
 
     productive_events = ProductiveClient.events(
@@ -56,6 +67,10 @@ namespace :breathe do
   task :to_productive, [:dry_run] do |t, args|
     args.with_defaults(dry_run: true)
 
+    dry_run = to_bool(args[:dry_run])
+
+    puts "Doing a dry run!" if dry_run
+
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
       event_types: {
@@ -74,7 +89,7 @@ namespace :breathe do
         holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
         other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
       },
-      dry_run: args[:dry_run]
+      dry_run: dry_run
     )
 
     date = Date.new(2019, 7, 1)
