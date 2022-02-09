@@ -100,11 +100,9 @@ class ProductiveClient
           }
 
         matching_bookings.each { |booking|
-          if dry_run
-            puts "#{email}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
-          else
-            booking.destroy
-          end
+          puts "#{email}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
+
+          booking.destroy unless dry_run
         }
       }
 
@@ -120,9 +118,9 @@ class ProductiveClient
           working_time / 2 :
           working_time
 
-        if dry_run
-          puts "#{email}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
-        else
+        puts "#{email}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
+
+        unless dry_run
           Productive::Booking.create(
             person_id: person_id,
             event_id: event_id,
