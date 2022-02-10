@@ -107,6 +107,8 @@ class ProductiveClient
       }
 
       changeset[:added].events.each { |event|
+        event_id = event_ids[event.type]
+
         working_time = daily_working_minutes(
           person_id: person_id,
           after: event.start_date,
