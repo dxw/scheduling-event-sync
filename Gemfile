@@ -6,9 +6,9 @@ gem "breathe"
 gem "dotenv"
 gem "memo_wise"
 gem "productive"
+gem "rake"
 
 group :development do
-  gem "rake"
   gem "standard"
 end
 
