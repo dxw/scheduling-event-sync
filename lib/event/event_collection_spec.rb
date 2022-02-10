@@ -276,12 +276,28 @@ RSpec.describe EventCollection do
         start_date: Date.new(2003, 1, 1),
         end_date: Date.new(2003, 2, 2)
       )
+      holiday_with_adjacent_half_days = Event.new(
+        type: :holiday,
+        start_date: Date.new(2004, 1, 1),
+        end_date: Date.new(2004, 1, 2),
+        start_half_day: true,
+        end_half_day: true
+      )
+      holiday_with_one_full_day_and_two_half_days = Event.new(
+        type: :holiday,
+        start_date: Date.new(2005, 1, 1),
+        end_date: Date.new(2005, 1, 3),
+        start_half_day: true,
+        end_half_day: true
+      )
 
       collection = EventCollection.new([
         holiday_starting_with_half_day,
         holiday_ending_with_half_day,
         holiday_with_both_half_days,
-        holiday_with_no_half_days
+        holiday_with_no_half_days,
+        holiday_with_adjacent_half_days,
+        holiday_with_one_full_day_and_two_half_days
       ])
 
       result = collection.split_half_days
@@ -336,7 +352,44 @@ RSpec.describe EventCollection do
           end_half_day: true
         ),
 
-        holiday_with_no_half_days
+        holiday_with_no_half_days,
+
+        # holiday_with_adjacent_half_days
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2004, 1, 1),
+          end_date: Date.new(2004, 1, 1),
+          start_half_day: true,
+          end_half_day: true
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2004, 1, 2),
+          end_date: Date.new(2004, 1, 2),
+          start_half_day: true,
+          end_half_day: true
+        ),
+
+        # holiday_with_one_full_day_and_two_half_days
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2005, 1, 1),
+          end_date: Date.new(2005, 1, 1),
+          start_half_day: true,
+          end_half_day: true
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2005, 1, 2),
+          end_date: Date.new(2005, 1, 2)
+        ),
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2005, 1, 3),
+          end_date: Date.new(2005, 1, 3),
+          start_half_day: true,
+          end_half_day: true
+        )
       ])
     end
 

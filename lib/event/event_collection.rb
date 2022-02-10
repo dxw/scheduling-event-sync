@@ -81,7 +81,7 @@ class EventCollection
           full_time_end_date = event.end_date - 1
         end
 
-        if full_time_start_date < full_time_end_date
+        if full_time_start_date <= full_time_end_date
           splits << Event.new(
             type: event.type,
             start_date: full_time_start_date,
