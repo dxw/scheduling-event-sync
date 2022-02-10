@@ -34,7 +34,7 @@ namespace :productive do
     )
 
     productive_events = ProductiveClient.events(
-      after: Date.new(2019, 7, 1)
+      after: Date.today - 90
     )
 
     productive_events.each_pair { |email, events|
@@ -94,7 +94,7 @@ namespace :breathe do
       dry_run: dry_run
     )
 
-    date = Date.new(2019, 7, 1)
+    date = Date.today - 90
 
     breathe_events = BreatheClient.events(
       after: date
