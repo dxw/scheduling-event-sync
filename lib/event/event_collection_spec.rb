@@ -60,7 +60,7 @@ RSpec.describe EventCollection do
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1),
-        start_half_day: true
+        half_day_at_start: true
       )
     }
     let(:theirs_b) {
@@ -68,7 +68,7 @@ RSpec.describe EventCollection do
         type: :sickness,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 1),
-        end_half_day: true
+        half_day_at_end: true
       )
     }
     let(:theirs_c) {
@@ -256,20 +256,20 @@ RSpec.describe EventCollection do
         type: :holiday,
         start_date: Date.new(2000, 1, 1),
         end_date: Date.new(2000, 2, 2),
-        start_half_day: true
+        half_day_at_start: true
       )
       holiday_ending_with_half_day = Event.new(
         type: :holiday,
         start_date: Date.new(2001, 1, 1),
         end_date: Date.new(2001, 2, 2),
-        end_half_day: true
+        half_day_at_end: true
       )
       holiday_with_both_half_days = Event.new(
         type: :holiday,
         start_date: Date.new(2002, 1, 1),
         end_date: Date.new(2002, 2, 2),
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
       holiday_with_no_half_days = Event.new(
         type: :holiday,
@@ -280,15 +280,15 @@ RSpec.describe EventCollection do
         type: :holiday,
         start_date: Date.new(2004, 1, 1),
         end_date: Date.new(2004, 1, 2),
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
       holiday_with_one_full_day_and_two_half_days = Event.new(
         type: :holiday,
         start_date: Date.new(2005, 1, 1),
         end_date: Date.new(2005, 1, 3),
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
 
       collection = EventCollection.new([
@@ -308,8 +308,8 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2000, 1, 1),
           end_date: Date.new(2000, 1, 1),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
         Event.new(
           type: :holiday,
@@ -327,8 +327,8 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2001, 2, 2),
           end_date: Date.new(2001, 2, 2),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
 
         # holiday_with_both_half_days
@@ -336,8 +336,8 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2002, 1, 1),
           end_date: Date.new(2002, 1, 1),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
         Event.new(
           type: :holiday,
@@ -348,8 +348,8 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2002, 2, 2),
           end_date: Date.new(2002, 2, 2),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
 
         holiday_with_no_half_days,
@@ -359,15 +359,15 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2004, 1, 1),
           end_date: Date.new(2004, 1, 1),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
         Event.new(
           type: :holiday,
           start_date: Date.new(2004, 1, 2),
           end_date: Date.new(2004, 1, 2),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
 
         # holiday_with_one_full_day_and_two_half_days
@@ -375,8 +375,8 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2005, 1, 1),
           end_date: Date.new(2005, 1, 1),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         ),
         Event.new(
           type: :holiday,
@@ -387,8 +387,8 @@ RSpec.describe EventCollection do
           type: :holiday,
           start_date: Date.new(2005, 1, 3),
           end_date: Date.new(2005, 1, 3),
-          start_half_day: true,
-          end_half_day: true
+          half_day_at_start: true,
+          half_day_at_end: true
         )
       ])
     end
@@ -398,8 +398,8 @@ RSpec.describe EventCollection do
         type: :holiday,
         start_date: Date.new(2002, 1, 1),
         end_date: Date.new(2002, 2, 2),
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
 
       collection = EventCollection.new([holiday_with_both_half_days])

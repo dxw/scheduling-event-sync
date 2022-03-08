@@ -52,15 +52,15 @@ class BreatheClient
 
             start_date = absence.start_date.to_date
             end_date = absence.end_date.to_date
-            start_half_day = absence.half_start
-            end_half_day = absence.half_end
+            half_day_at_start = absence.half_start
+            half_day_at_end = absence.half_end
 
             Event.new(
               type: type,
               start_date: start_date,
               end_date: end_date,
-              start_half_day: start_half_day,
-              end_half_day: end_half_day
+              half_day_at_start: half_day_at_start,
+              half_day_at_end: half_day_at_end
             )
           }
           .compact
@@ -83,15 +83,15 @@ class BreatheClient
           .map { |sickness|
             start_date = sickness[:start_date].to_date
             end_date = sickness[:end_date]&.to_date || Date.today
-            start_half_day = sickness[:half_start]
-            end_half_day = sickness[:half_end]
+            half_day_at_start = sickness[:half_start]
+            half_day_at_end = sickness[:half_end]
 
             Event.new(
               type: :sickness,
               start_date: start_date,
               end_date: end_date,
-              start_half_day: start_half_day,
-              end_half_day: end_half_day
+              half_day_at_start: half_day_at_start,
+              half_day_at_end: half_day_at_end
             )
           }
           .compact
@@ -120,15 +120,15 @@ class BreatheClient
 
             next if end_date.nil?
 
-            start_half_day = training[:half_start]
-            end_half_day = training[:half_end]
+            half_day_at_start = training[:half_start]
+            half_day_at_end = training[:half_end]
 
             Event.new(
               type: :other_leave,
               start_date: start_date,
               end_date: end_date,
-              start_half_day: start_half_day,
-              end_half_day: end_half_day
+              half_day_at_start: half_day_at_start,
+              half_day_at_end: half_day_at_end
             )
           }
           .compact
