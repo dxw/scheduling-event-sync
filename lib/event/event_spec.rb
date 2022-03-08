@@ -250,6 +250,30 @@ RSpec.describe Event do
         expectation: true
       },
       {
+        name: "returns false when the other event starts (PM) on the day after the end (PM) of the subject",
+        other: {
+          start_date: subject_end_date + 1,
+          end_date: subject_end_date + 30,
+          start_half_day: true
+        },
+        subject: {
+          end_half_day: false
+        },
+        expectation: false
+      },
+      {
+        name: "returns false when the other event starts (PM) on the day after the end (AM) of the subject",
+        other: {
+          start_date: subject_end_date + 1,
+          end_date: subject_end_date + 30,
+          start_half_day: true
+        },
+        subject: {
+          end_half_day: true
+        },
+        expectation: false
+      },
+      {
         name: "returns true when the other event ends (PM) on the day before the start (AM) of the subject",
         other: {
           start_date: subject_start_date - 30,
@@ -260,6 +284,30 @@ RSpec.describe Event do
           start_half_day: false
         },
         expectation: true
+      },
+      {
+        name: "returns false when the other event ends (AM) on the day before the start (AM) of the subject",
+        other: {
+          start_date: subject_start_date - 30,
+          end_date: subject_start_date - 1,
+          end_half_day: true
+        },
+        subject: {
+          start_half_day: false
+        },
+        expectation: false
+      },
+      {
+        name: "returns false when the other event ends (AM) on the day before the start (PM) of the subject",
+        other: {
+          start_date: subject_start_date - 30,
+          end_date: subject_start_date - 1,
+          end_half_day: true
+        },
+        subject: {
+          start_half_day: true
+        },
+        expectation: false
       },
 
       # same day
