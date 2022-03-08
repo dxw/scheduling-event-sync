@@ -70,8 +70,8 @@ class ProductiveClient
               type: event_ids.key(booking.event.id),
               start_date: start_date,
               end_date: end_date,
-              start_half_day: half_day,
-              end_half_day: half_day
+              half_day_at_start: half_day,
+              half_day_at_end: half_day
             )
           }
           .compact
@@ -116,7 +116,7 @@ class ProductiveClient
         )
 
         time =
-          event.start_half_day || event.end_half_day ?
+          event.half_day_at_start || event.half_day_at_end ?
           working_time / 2 :
           working_time
 

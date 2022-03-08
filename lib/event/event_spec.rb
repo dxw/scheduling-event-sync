@@ -113,16 +113,16 @@ RSpec.describe Event do
     end
   end
 
-  describe "#start_half_day" do
+  describe "#half_day_at_start" do
     it "returns the initial start half day" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true
+        half_day_at_start: true
       )
 
-      expect(event.start_half_day).to be(true)
+      expect(event.half_day_at_start).to be(true)
     end
 
     it "defaults to false" do
@@ -132,7 +132,7 @@ RSpec.describe Event do
         end_date: end_date
       )
 
-      expect(event.start_half_day).to be(false)
+      expect(event.half_day_at_start).to be(false)
     end
 
     it "is read-only" do
@@ -140,23 +140,23 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true
+        half_day_at_start: true
       )
 
-      expect(event).not_to respond_to(:start_half_day=)
+      expect(event).not_to respond_to(:half_day_at_start=)
     end
   end
 
-  describe "#end_half_day" do
+  describe "#half_day_at_end" do
     it "returns the initial end half day" do
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_half_day: true
+        half_day_at_end: true
       )
 
-      expect(event.end_half_day).to be(true)
+      expect(event.half_day_at_end).to be(true)
     end
 
     it "defaults to false" do
@@ -166,7 +166,7 @@ RSpec.describe Event do
         end_date: end_date
       )
 
-      expect(event.end_half_day).to be(false)
+      expect(event.half_day_at_end).to be(false)
     end
 
     it "is read-only" do
@@ -174,10 +174,10 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_half_day: true
+        half_day_at_end: true
       )
 
-      expect(event).not_to respond_to(:end_half_day=)
+      expect(event).not_to respond_to(:half_day_at_end=)
     end
   end
 
@@ -242,10 +242,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date + 1,
           end_date: subject_end_date + 30,
-          start_half_day: false
+          half_day_at_start: false
         },
         subject: {
-          end_half_day: false
+          half_day_at_end: false
         },
         expectation: true
       },
@@ -254,10 +254,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date + 1,
           end_date: subject_end_date + 30,
-          start_half_day: true
+          half_day_at_start: true
         },
         subject: {
-          end_half_day: false
+          half_day_at_end: false
         },
         expectation: false
       },
@@ -266,10 +266,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date + 1,
           end_date: subject_end_date + 30,
-          start_half_day: true
+          half_day_at_start: true
         },
         subject: {
-          end_half_day: true
+          half_day_at_end: true
         },
         expectation: false
       },
@@ -278,10 +278,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date - 1,
-          end_half_day: false
+          half_day_at_end: false
         },
         subject: {
-          start_half_day: false
+          half_day_at_start: false
         },
         expectation: true
       },
@@ -290,10 +290,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date - 1,
-          end_half_day: true
+          half_day_at_end: true
         },
         subject: {
-          start_half_day: false
+          half_day_at_start: false
         },
         expectation: false
       },
@@ -302,10 +302,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date - 1,
-          end_half_day: true
+          half_day_at_end: true
         },
         subject: {
-          start_half_day: true
+          half_day_at_start: true
         },
         expectation: false
       },
@@ -316,10 +316,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date,
           end_date: subject_end_date + 30,
-          start_half_day: true
+          half_day_at_start: true
         },
         subject: {
-          end_half_day: true
+          half_day_at_end: true
         },
         expectation: true
       },
@@ -328,10 +328,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date,
-          end_half_day: true
+          half_day_at_end: true
         },
         subject: {
-          start_half_day: true
+          half_day_at_start: true
         },
         expectation: true
       },
@@ -342,10 +342,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_end_date,
           end_date: subject_end_date + 30,
-          start_half_day: false
+          half_day_at_start: false
         },
         subject: {
-          end_half_day: false
+          half_day_at_end: false
         },
         expectation: false
       },
@@ -354,10 +354,10 @@ RSpec.describe Event do
         other: {
           start_date: subject_start_date - 30,
           end_date: subject_start_date,
-          end_half_day: false
+          half_day_at_end: false
         },
         subject: {
-          start_half_day: false
+          half_day_at_start: false
         },
         expectation: false
       },
@@ -403,15 +403,15 @@ RSpec.describe Event do
           type: :holiday,
           start_date: test_case[:other][:start_date],
           end_date: test_case[:other][:end_date],
-          start_half_day: test_case[:other][:start_half_day],
-          end_half_day: test_case[:other][:end_half_day]
+          half_day_at_start: test_case[:other][:half_day_at_start],
+          half_day_at_end: test_case[:other][:half_day_at_end]
         )
         event = Event.new(
           type: :holiday,
           start_date: subject_start_date,
           end_date: subject_end_date,
-          start_half_day: test_case.fetch(:subject, {})[:start_half_day],
-          end_half_day: test_case.fetch(:subject, {})[:end_half_day]
+          half_day_at_start: test_case.fetch(:subject, {})[:half_day_at_start],
+          half_day_at_end: test_case.fetch(:subject, {})[:half_day_at_end]
         )
 
         expect(event.adjacent_to?(other)).to be(test_case[:expectation])
@@ -440,13 +440,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 30,
-        start_half_day: true
+        half_day_at_start: true
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: false
+        half_day_at_start: false
       )
 
       expect(event.starts_before?(other)).to be(true)
@@ -457,13 +457,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 30,
-        start_half_day: false
+        half_day_at_start: false
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true
+        half_day_at_start: true
       )
 
       expect(event.starts_before?(other)).to be(false)
@@ -506,13 +506,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date,
-        end_half_day: true
+        half_day_at_end: true
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_half_day: false
+        half_day_at_end: false
       )
 
       expect(event.ends_after?(other)).to be(true)
@@ -523,13 +523,13 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date - 30,
         end_date: end_date,
-        end_half_day: false
+        half_day_at_end: false
       )
       event = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_half_day: true
+        half_day_at_end: true
       )
 
       expect(event.ends_after?(other)).to be(false)
@@ -849,30 +849,30 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true
+        half_day_at_start: true
       )
       before = Event.new(
         type: :holiday,
         start_date: start_date - 3,
         end_date: end_date,
-        start_half_day: false
+        half_day_at_start: false
       )
       after = Event.new(
         type: :holiday,
         start_date: start_date + 3,
         end_date: end_date,
-        start_half_day: false
+        half_day_at_start: false
       )
 
       new_before = event.merge_with(before)
 
       expect(new_before.start_date).to eq(start_date - 3)
-      expect(new_before.start_half_day).to be(false)
+      expect(new_before.half_day_at_start).to be(false)
 
       new_after = event.merge_with(after)
 
       expect(new_after.start_date).to eq(start_date)
-      expect(new_after.start_half_day).to be(true)
+      expect(new_after.half_day_at_start).to be(true)
     end
 
     it "returns a new event with the latest end date and matching end half day" do
@@ -880,30 +880,30 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        end_half_day: true
+        half_day_at_end: true
       )
       before = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date - 3,
-        end_half_day: false
+        half_day_at_end: false
       )
       after = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date + 3,
-        end_half_day: false
+        half_day_at_end: false
       )
 
       new_before = event.merge_with(before)
 
       expect(new_before.end_date).to eq(end_date)
-      expect(new_before.end_half_day).to be(true)
+      expect(new_before.half_day_at_end).to be(true)
 
       new_after = event.merge_with(after)
 
       expect(new_after.end_date).to eq(end_date + 3)
-      expect(new_after.end_half_day).to be(false)
+      expect(new_after.half_day_at_end).to be(false)
     end
   end
 
@@ -913,15 +913,15 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
       other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
 
       expect(event == other).to be(true)
@@ -932,15 +932,15 @@ RSpec.describe Event do
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: true,
-        end_half_day: true
+        half_day_at_start: true,
+        half_day_at_end: true
       )
       other = Event.new(
         type: :holiday,
         start_date: start_date,
         end_date: end_date,
-        start_half_day: false,
-        end_half_day: false
+        half_day_at_start: false,
+        half_day_at_end: false
       )
 
       expect(event == other).to be(false)

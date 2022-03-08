@@ -50,32 +50,32 @@ class EventCollection
   def split_half_days
     split_events = events
       .map { |event|
-        next event unless event.start_half_day || event.end_half_day
+        next event unless event.half_day_at_start || event.half_day_at_end
         next event if event.start_date == event.end_date
 
         splits = []
         full_time_start_date = event.start_date
         full_time_end_date = event.end_date
 
-        if event.start_half_day
+        if event.half_day_at_start
           splits << Event.new(
             type: event.type,
             start_date: event.start_date,
             end_date: event.start_date,
-            start_half_day: true,
-            end_half_day: true
+            half_day_at_start: true,
+            half_day_at_end: true
           )
 
           full_time_start_date = event.start_date + 1
         end
 
-        if event.end_half_day
+        if event.half_day_at_end
           splits << Event.new(
             type: event.type,
             start_date: event.end_date,
             end_date: event.end_date,
-            start_half_day: true,
-            end_half_day: true
+            half_day_at_start: true,
+            half_day_at_end: true
           )
 
           full_time_end_date = event.end_date - 1
@@ -86,8 +86,8 @@ class EventCollection
             type: event.type,
             start_date: full_time_start_date,
             end_date: full_time_end_date,
-            start_half_day: false,
-            end_half_day: false
+            half_day_at_start: false,
+            half_day_at_end: false
           )
         end
 
