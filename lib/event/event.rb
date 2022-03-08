@@ -36,14 +36,29 @@ class Event
   end
 
   def adjacent_to?(other)
+    ends_at_other_start_same_day =
+      end_date == other.start_date &&
+      end_half_day &&
+      other.start_half_day
+    ends_at_other_start_different_day =
+      end_date + 1 == other.start_date &&
+      !end_half_day &&
+      !other.start_half_day
     ends_at_other_start =
-      end_date + 1 == other.start_date || (
-        end_date == other.start_date && end_half_day && other.start_half_day
-      )
+      ends_at_other_start_same_day ||
+      ends_at_other_start_different_day
+
+    other_ends_at_start_same_day =
+      other.end_date == start_date &&
+      other.end_half_day &&
+      start_half_day
+    other_ends_at_start_different_day =
+      other.end_date + 1 == start_date &&
+      !other.end_half_day &&
+      !start_half_day
     other_ends_at_start =
-      other.end_date + 1 == start_date || (
-        other.end_date == start_date && other.end_half_day && start_half_day
-      )
+      other_ends_at_start_same_day ||
+      other_ends_at_start_different_day
 
     ends_at_other_start || other_ends_at_start
   end
