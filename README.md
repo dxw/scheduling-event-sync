@@ -28,3 +28,13 @@ Note that this is a destructive operation. It works by looking at the current
 state of the managed events in BreatheHR and updates Productive to match them by
 removing any existing events in Productive that don't exist in BreatheHR, and
 creating new events when they exist in BreatheHR but not Productive.
+
+#### Changing the start date
+
+By default, the sync task considers all events that intersect with the last 90
+days. If you'd like to specify a different start date, do so by passing an
+argument into the task.
+
+```
+$ bundle exec rake 'breathe:to_productive[2020-01-01]'
+```
