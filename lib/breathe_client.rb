@@ -159,8 +159,7 @@ class BreatheClient
           exclude_cancelled_sicknesses: true
         )
         .response
-        .data
-        .to_h[:sicknesses]
+        .data[:sicknesses]
     end
     memo_wise :sicknesses
 
@@ -172,8 +171,7 @@ class BreatheClient
           exclude_cancelled_employee_training_courses: true
         )
         .response
-        .data
-        .to_h[:employee_training_courses]
+        .data[:employee_training_courses]
     end
     memo_wise :trainings
 
