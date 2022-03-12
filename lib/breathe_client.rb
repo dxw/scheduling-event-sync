@@ -185,8 +185,13 @@ class BreatheClient
     memo_wise :trainings
 
     def rate_limited?(error)
-      error.instance_of?(Breathe::UnknownError) &&
+      (
+        error.instance_of?(Breathe::UnknownError) &&
         client.last_response.data[:error][:type] == "Rate Limit Reached"
+      ) || (
+        error.instance_of?(TypeError) &&
+        error.message == "no implicit conversion of nil into Array"
+      )
     end
 
     def await_rate_limit_reset
