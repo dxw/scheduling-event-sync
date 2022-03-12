@@ -112,10 +112,18 @@ class BreatheClient
         .list
         .response
         .data[:employees]
+    rescue => error
+      raise unless rate_limited?(error)
+
+      await_rate_limit_reset
+
+      employees
     end
     memo_wise :employees
 
     private
+
+    SECONDS_FOR_RATE_LIMIT_RESET = 60
 
     attr_reader :client, :event_types, :event_reason_types
 
@@ -129,6 +137,12 @@ class BreatheClient
         )
         .response
         .data[:absences]
+    rescue => error
+      raise unless rate_limited?(error)
+
+      await_rate_limit_reset
+
+      absences(employee_id: employee_id, after: after)
     end
     memo_wise :absences
 
@@ -142,6 +156,12 @@ class BreatheClient
         )
         .response
         .data[:sicknesses]
+    rescue => error
+      raise unless rate_limited?(error)
+
+      await_rate_limit_reset
+
+      sicknesses(employee_id: employee_id, after: after)
     end
     memo_wise :sicknesses
 
@@ -155,7 +175,23 @@ class BreatheClient
         )
         .response
         .data[:employee_training_courses]
+    rescue => error
+      raise unless rate_limited?(error)
+
+      await_rate_limit_reset
+
+      trainings(employee_id: employee_id, after: after)
     end
     memo_wise :trainings
+
+    def rate_limited?(error)
+      error.instance_of?(Breathe::UnknownError) &&
+        client.last_response.data[:error][:type] == "Rate Limit Reached"
+    end
+
+    def await_rate_limit_reset
+      puts "Waiting #{SECONDS_FOR_RATE_LIMIT_RESET} seconds due to rate limiting by Breathe"
+      sleep SECONDS_FOR_RATE_LIMIT_RESET
+    end
   end
 end
