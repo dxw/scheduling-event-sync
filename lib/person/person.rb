@@ -41,11 +41,10 @@ class Person
     breathe_events = breathe_events(after: after)
     productive_events = productive_events(after: after)
 
-    changeset = breathe_events.all_changes_from(
-      productive_events,
-      compress: true,
-      split_half_days: true
-    )
+    changeset = {
+      removed: productive_events,
+      added: breathe_events.compress.split_half_days
+    }
 
     ProductiveClient.update_events_for(self, changeset)
 
