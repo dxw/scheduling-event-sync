@@ -9,22 +9,25 @@ class Person
           id = employee[:id]
           email = employee[:email]
 
-          Person.new(email: email, breathe_id: id)
+          emails = email_aliases.find { |emails| emails.include?(email) }
+          emails = [email] if emails.nil?
+
+          Person.new(emails: emails, breathe_id: id)
         }
         .compact
     end
   end
 
-  attr_reader :email, :breathe_id, :productive_id
+  attr_reader :emails, :breathe_id, :productive_id
 
-  def initialize(email:, breathe_id: nil, productive_id: nil)
-    @email = email
+  def initialize(emails:, breathe_id: nil, productive_id: nil)
+    @emails = emails
     @breathe_id = breathe_id
     @productive_id = productive_id
   end
 
   def label
-    email
+    emails.first
   end
 
   def sync_breathe_to_productive(after:)
@@ -56,7 +59,7 @@ class Person
   def fetch_productive_attributes
     return true unless productive_id.nil?
 
-    productive_person = ProductiveClient.person(email: email)
+    productive_person = ProductiveClient.person(emails: emails)
 
     return false if productive_person.nil?
 

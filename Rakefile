@@ -14,6 +14,13 @@ def to_bool(arg)
   raise ArgumentError.new("Unable to convert value to boolean: \"#{arg}\"")
 end
 
+def email_aliases
+  ENV.fetch("EMAIL_ALIASES", "")
+    .strip
+    .split("\n")
+    .map { |line| line.strip.split(/\s*[,;]\s*/) }
+end
+
 namespace :productive do
   desc "List all event types on Productive"
   task :list_event_types do
@@ -44,7 +51,8 @@ namespace :breathe do
       },
       event_reason_types: {
         ignored: ENV.fetch("BREATHE_IGNORED_EVENT_REASON_TYPES").split(",")
-      }
+      },
+      email_aliases: email_aliases
     )
 
     ProductiveClient.configure(

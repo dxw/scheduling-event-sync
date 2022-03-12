@@ -124,8 +124,8 @@ class ProductiveClient
       }
     end
 
-    def person(email:)
-      Productive::Person.where(email: email).first
+    def person(emails:)
+      Productive::Person.where(email: emails).first
     end
     memo_wise :person
 

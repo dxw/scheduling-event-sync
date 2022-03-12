@@ -6,12 +6,13 @@ class BreatheClient
   class << self
     prepend MemoWise
 
-    def configure(api_key:, event_types:, event_reason_types:)
+    def configure(api_key:, event_types:, event_reason_types:, email_aliases:)
       reset_memo_wise
 
       @client = Breathe::Client.new(api_key: api_key, auto_paginate: true)
       @event_types = event_types
       @event_reason_types = event_reason_types
+      @email_aliases = email_aliases
     end
 
     def events(person:, after:)
@@ -125,7 +126,7 @@ class BreatheClient
 
     SECONDS_FOR_RATE_LIMIT_RESET = 60
 
-    attr_reader :client, :event_types, :event_reason_types
+    attr_reader :client, :event_types, :event_reason_types, :email_aliases
 
     def absences(employee_id:, after:)
       client
