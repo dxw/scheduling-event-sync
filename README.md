@@ -28,15 +28,3 @@ Note that this is a destructive operation. It works by looking at the current
 state of the managed events in BreatheHR and updates Productive to match them by
 removing any existing events in Productive that don't exist in BreatheHR, and
 creating new events when they exist in BreatheHR but not Productive.
-
-### Extra functionality
-
-#### Simplify / compress events on Productive
-
-```
-$ bundle exec rake productive:compress
-```
-
-You're unlikely to need to run this as it's included as part of the sync tasks,
-but if you want to unify existing neighbouring events without synchronising with
-other systems, this is how you do it.
