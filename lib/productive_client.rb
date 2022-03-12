@@ -37,53 +37,43 @@ class ProductiveClient
     end
     memo_wise :event_types
 
-    def events(after:)
-      bookings_by_email = bookings(after: after).group_by { |booking|
-        booking.person.email.downcase
-      }
+    def events(person:, after:)
+      events = bookings(person_id: person.productive_id, after: after)
+        .map { |booking|
+          # Not sure why there might be nil time bookings, but there do seem
+          # to be.
+          next if booking.time.nil?
 
-      bookings_by_email.keys.each_with_object({}) { |email, hash|
-        person_id = person(email: email).id
+          start_date = booking.started_on.to_date
+          end_date = booking.ended_on.to_date
 
-        events = bookings_by_email[email]
-          .map { |booking|
-            # Not sure why there might be nil time bookings, but there do seem
-            # to be.
-            next if booking.time.nil?
-
-            start_date = booking.started_on.to_date
-            end_date = booking.ended_on.to_date
-
-            half_day = if start_date == end_date
-              working_time = daily_working_minutes(
-                person_id: person_id,
-                after: start_date,
-                before: end_date
-              )
-
-              booking.time <= working_time / 2
-            else
-              false
-            end
-
-            Event.new(
-              type: event_ids.key(booking.event.id),
-              start_date: start_date,
-              end_date: end_date,
-              half_day_at_start: half_day,
-              half_day_at_end: half_day
+          half_day = if start_date == end_date
+            working_time = daily_working_minutes(
+              person_id: person.productive_id,
+              after: start_date,
+              before: end_date
             )
-          }
-          .compact
 
-        hash[email] = EventCollection.new(events)
-      }
+            booking.time <= working_time / 2
+          else
+            false
+          end
+
+          Event.new(
+            type: event_ids.key(booking.event.id),
+            start_date: start_date,
+            end_date: end_date,
+            half_day_at_start: half_day,
+            half_day_at_end: half_day
+          )
+        }
+        .compact
+
+      EventCollection.new(events)
     end
     memo_wise :events
 
-    def update_events_for(email, changeset)
-      person_id = person(email: email).id
-
+    def update_events_for(person, changeset)
       changeset[:removed].events.each { |event|
         event_id = event_ids[event.type]
 
@@ -100,7 +90,7 @@ class ProductiveClient
           }
 
         matching_bookings.each { |booking|
-          puts "#{email}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
+          puts "#{person.label}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
 
           booking.destroy unless dry_run
         }
@@ -110,7 +100,7 @@ class ProductiveClient
         event_id = event_ids[event.type]
 
         working_time = daily_working_minutes(
-          person_id: person_id,
+          person_id: person.productive_id,
           after: event.start_date,
           before: event.end_date
         )
@@ -120,11 +110,11 @@ class ProductiveClient
           working_time / 2 :
           working_time
 
-        puts "#{email}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
+        puts "#{person.label}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
 
         unless dry_run
           Productive::Booking.create(
-            person_id: person_id,
+            person_id: person.productive_id,
             event_id: event_id,
             started_on: event.start_date,
             ended_on: event.end_date,
@@ -134,24 +124,25 @@ class ProductiveClient
       }
     end
 
+    def person(email:)
+      Productive::Person.where(email: email).first
+    end
+    memo_wise :person
+
     private
 
     attr_reader :event_ids
 
-    def bookings(after:)
+    def bookings(person_id:, after:)
       Productive::Booking
         .where(
+          person_id: person_id,
           event_id: event_ids.values,
           after: after
         )
         .all
     end
     memo_wise :bookings
-
-    def person(email:)
-      Productive::Person.where(email: email).first
-    end
-    memo_wise :person
 
     def salaries(person_id:, after:, before:)
       Productive::Salary

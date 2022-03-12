@@ -14,166 +14,97 @@ class BreatheClient
       @event_reason_types = event_reason_types
     end
 
-    def events(after:)
-      absence = absence_events(after: after)
-      sickness = sickness_events(after: after)
-      training = training_events(after: after)
+    def events(person:, after:)
+      absence = absence_events(person: person, after: after)
+      sickness = sickness_events(person: person, after: after)
+      training = training_events(person: person, after: after)
 
-      emails = absence.keys | sickness.keys | training.keys
-
-      emails.each_with_object({}) { |email, hash|
-        events =
-          (absence[email]&.events || []) +
-          (sickness[email]&.events || []) +
-          (training[email]&.events || [])
-
-        hash[email] = EventCollection.new(events)
-      }
+      absence + sickness + training
     end
     memo_wise :events
 
-    def absence_events(after:)
-      absences_by_email = absences(after: after).group_by { |absence|
-        absence.employee.email.downcase
-      }
+    def absence_events(person:, after:)
+      events = absences(employee_id: person.breathe_id, after: after)
+        .map { |absence|
+          leave_reason = absence.leave_reason&.name
+          leave_reason_type = event_reason_types
+            .keys
+            .find { |reason|
+              event_reason_types[reason].include?(leave_reason)
+            }
+          next if leave_reason_type == :ignored
 
-      absences_by_email.keys.each_with_object({}) { |email, hash|
-        events = absences_by_email[email]
-          .map { |absence|
-            leave_reason = event_reason_types
-              .keys
-              .find { |reason|
-                event_reason_types[reason].include?(absence.leave_reason&.name)
-              }
-            next if leave_reason == :ignored
+          type = event_types.key(absence.type)
+          type = :other_leave if type.nil?
 
-            type = event_types.key(absence.type)
-            type = :other_leave if type.nil?
+          start_date = absence.start_date.to_date
+          end_date = absence.end_date.to_date
+          half_day_at_start = absence.half_start
+          half_day_at_end = absence.half_end
 
-            start_date = absence.start_date.to_date
-            end_date = absence.end_date.to_date
-            half_day_at_start = absence.half_start
-            half_day_at_end = absence.half_end
+          Event.new(
+            type: type,
+            start_date: start_date,
+            end_date: end_date,
+            half_day_at_start: half_day_at_start,
+            half_day_at_end: half_day_at_end
+          )
+        }
+        .compact
 
-            Event.new(
-              type: type,
-              start_date: start_date,
-              end_date: end_date,
-              half_day_at_start: half_day_at_start,
-              half_day_at_end: half_day_at_end
-            )
-          }
-          .compact
-
-        hash[email] = EventCollection.new(events)
-      }
+      EventCollection.new(events)
     end
     memo_wise :absence_events
 
-    def sickness_events(after:)
-      sicknesses_by_email = sicknesses(after: after).group_by { |sickness|
-        id = sickness[:employee][:id]
-        e = employees.find { |employee| employee[:id] == id }
+    def sickness_events(person:, after:)
+      events = sicknesses(employee_id: person.breathe_id, after: after)
+        .map { |sickness|
+          start_date = sickness[:start_date].to_date
+          end_date = sickness[:end_date]&.to_date || Date.today
+          half_day_at_start = sickness[:half_start]
+          half_day_at_end = sickness[:half_end]
 
-        e[:email]
-      }
+          Event.new(
+            type: :sickness,
+            start_date: start_date,
+            end_date: end_date,
+            half_day_at_start: half_day_at_start,
+            half_day_at_end: half_day_at_end
+          )
+        }
+        .compact
 
-      sicknesses_by_email.keys.each_with_object({}) { |email, hash|
-        events = sicknesses_by_email[email]
-          .map { |sickness|
-            start_date = sickness[:start_date].to_date
-            end_date = sickness[:end_date]&.to_date || Date.today
-            half_day_at_start = sickness[:half_start]
-            half_day_at_end = sickness[:half_end]
-
-            Event.new(
-              type: :sickness,
-              start_date: start_date,
-              end_date: end_date,
-              half_day_at_start: half_day_at_start,
-              half_day_at_end: half_day_at_end
-            )
-          }
-          .compact
-
-        hash[email] = EventCollection.new(events)
-      }
+      EventCollection.new(events)
     end
     memo_wise :sickness_events
 
-    def training_events(after:)
-      trainings_by_email = trainings(after: after).group_by { |training|
-        id = training[:employee][:id]
-        e = employees.find { |employee| employee[:id] == id }
+    def training_events(person:, after:)
+      events = trainings(employee_id: person.breathe_id, after: after)
+        .map { |training|
+          start_date = training[:start_date]&.to_date
 
-        e[:email]
-      }
+          next if start_date.nil?
 
-      trainings_by_email.keys.each_with_object({}) { |email, hash|
-        events = trainings_by_email[email]
-          .map { |training|
-            start_date = training[:start_date]&.to_date
+          end_date = training[:end_date]&.to_date
 
-            next if start_date.nil?
+          next if end_date.nil?
 
-            end_date = training[:end_date]&.to_date
+          half_day_at_start = training[:half_start]
+          half_day_at_end = training[:half_end]
 
-            next if end_date.nil?
+          Event.new(
+            type: :other_leave,
+            start_date: start_date,
+            end_date: end_date,
+            half_day_at_start: half_day_at_start,
+            half_day_at_end: half_day_at_end
+          )
+        }
+        .compact
 
-            half_day_at_start = training[:half_start]
-            half_day_at_end = training[:half_end]
-
-            Event.new(
-              type: :other_leave,
-              start_date: start_date,
-              end_date: end_date,
-              half_day_at_start: half_day_at_start,
-              half_day_at_end: half_day_at_end
-            )
-          }
-          .compact
-
-        hash[email] = EventCollection.new(events)
-      }
+      EventCollection.new(events)
     end
     memo_wise :training_events
-
-    private
-
-    attr_reader :client, :event_types, :event_reason_types
-
-    def absences(after:)
-      client
-        .absences
-        .list(start_date: after, exclude_cancelled_absences: true)
-        .response
-        .data[:absences]
-    end
-    memo_wise :absences
-
-    def sicknesses(after:)
-      client
-        .sicknesses
-        .list(
-          start_date: after,
-          exclude_cancelled_sicknesses: true
-        )
-        .response
-        .data[:sicknesses]
-    end
-    memo_wise :sicknesses
-
-    def trainings(after:)
-      client
-        .employee_training_courses
-        .list(
-          start_date: after,
-          exclude_cancelled_employee_training_courses: true
-        )
-        .response
-        .data[:employee_training_courses]
-    end
-    memo_wise :trainings
 
     def employees
       client
@@ -183,5 +114,48 @@ class BreatheClient
         .data[:employees]
     end
     memo_wise :employees
+
+    private
+
+    attr_reader :client, :event_types, :event_reason_types
+
+    def absences(employee_id:, after:)
+      client
+        .absences
+        .list(
+          employee_id: employee_id,
+          start_date: after,
+          exclude_cancelled_absences: true
+        )
+        .response
+        .data[:absences]
+    end
+    memo_wise :absences
+
+    def sicknesses(employee_id:, after:)
+      client
+        .sicknesses
+        .list(
+          employee_id: employee_id,
+          start_date: after,
+          exclude_cancelled_sicknesses: true
+        )
+        .response
+        .data[:sicknesses]
+    end
+    memo_wise :sicknesses
+
+    def trainings(employee_id:, after:)
+      client
+        .employee_training_courses
+        .list(
+          employee_id: employee_id,
+          start_date: after,
+          exclude_cancelled_employee_training_courses: true
+        )
+        .response
+        .data[:employee_training_courses]
+    end
+    memo_wise :trainings
   end
 end
