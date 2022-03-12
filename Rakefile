@@ -36,12 +36,13 @@ end
 
 namespace :breathe do
   desc "Update all managed events on Productive to match Breathe"
-  task :to_productive, [:dry_run] do |t, args|
-    args.with_defaults(dry_run: true)
+  task :to_productive do
+    dry_run = to_bool(ENV.fetch("SYNC_DRY_RUN", true))
 
-    dry_run = to_bool(args[:dry_run])
-
-    puts "Doing a dry run!" if dry_run
+    if dry_run
+      puts "Doing a dry run!"
+      puts "Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
+    end
 
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
