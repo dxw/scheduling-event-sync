@@ -36,12 +36,18 @@ end
 
 namespace :breathe do
   desc "Update all managed events on Productive to match Breathe"
-  task :to_productive, [:dry_run] do |t, args|
-    args.with_defaults(dry_run: true)
+  task :to_productive, [:earliest_date] do |t, args|
+    args.with_defaults(earliest_date: (Date.today - 90).strftime)
 
-    dry_run = to_bool(args[:dry_run])
+    dry_run = to_bool(ENV.fetch("SYNC_DRY_RUN", true))
 
-    puts "Doing a dry run!" if dry_run
+    if dry_run
+      puts "Doing a dry run!"
+      puts "Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
+    end
+
+    earliest_date = Date.parse(args[:earliest_date])
+    puts "Syncing events on or after #{earliest_date.strftime}"
 
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
@@ -66,10 +72,8 @@ namespace :breathe do
       dry_run: dry_run
     )
 
-    date = Date.today - 90
-
     Person
       .all_from_breathe
-      .each { |person| person.sync_breathe_to_productive(after: date) }
+      .each { |person| person.sync_breathe_to_productive(after: earliest_date) }
   end
 end
