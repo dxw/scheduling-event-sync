@@ -7,29 +7,6 @@ class EventCollection
     @events = events.sort_by(&:start_date)
   end
 
-  def all_changes_from(other, compress: false, split_half_days: false)
-    our = compress ? self.compress : self
-    our = split_half_days ? our.split_half_days : our
-
-    our_unshared_events = our.events.reject { |event|
-      other.events.include?(event)
-    }
-    their_unshared_events = other.events.reject { |event|
-      our.events.include?(event)
-    }
-
-    added = self.class.new(our_unshared_events)
-    added = compress ? added.compress : added
-    added = split_half_days ? added.split_half_days : added
-
-    removed = self.class.new(their_unshared_events)
-
-    {
-      added: added,
-      removed: removed
-    }
-  end
-
   def compress
     compressed_events = events
       .group_by(&:type)
