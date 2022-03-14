@@ -99,6 +99,10 @@ class EventCollection
     self.class.new(split_events)
   end
 
+  def +(other)
+    self.class.new(events + other.events)
+  end
+
   private
 
   attr_writer :events

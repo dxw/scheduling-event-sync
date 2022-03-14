@@ -3,6 +3,7 @@ Dotenv.load
 
 require_relative "./lib/event/event"
 require_relative "./lib/event/event_collection"
+require_relative "./lib/person/person"
 require_relative "./lib/breathe_client"
 require_relative "./lib/productive_client"
 
@@ -11,6 +12,13 @@ def to_bool(arg)
   return false if arg == false || arg =~ (/(false|f|no|n|0)$/i)
 
   raise ArgumentError.new("Unable to convert value to boolean: \"#{arg}\"")
+end
+
+def email_aliases
+  ENV.fetch("EMAIL_ALIASES", "")
+    .strip
+    .split("\n")
+    .map { |line| line.strip.split(/\s*[,;]\s*/) }
 end
 
 namespace :productive do
@@ -43,7 +51,8 @@ namespace :breathe do
       },
       event_reason_types: {
         ignored: ENV.fetch("BREATHE_IGNORED_EVENT_REASON_TYPES").split(",")
-      }
+      },
+      email_aliases: email_aliases
     )
 
     ProductiveClient.configure(
@@ -59,33 +68,8 @@ namespace :breathe do
 
     date = Date.today - 90
 
-    breathe_events = BreatheClient.events(
-      after: date
-    )
-
-    productive_events = ProductiveClient.events(
-      after: date
-    )
-
-    breathe_events.each_pair { |email, events|
-      other_events = productive_events[email]
-
-      if other_events.nil?
-        puts "#{email}: no match"
-        next
-      end
-
-      puts "#{email}: finding changes"
-
-      changeset = events.all_changes_from(
-        other_events,
-        compress: true,
-        split_half_days: true
-      )
-
-      ProductiveClient.update_events_for(email, changeset)
-
-      puts "#{email}: done"
-    }
+    Person
+      .all_from_breathe
+      .each { |person| person.sync_breathe_to_productive(after: date) }
   end
 end
