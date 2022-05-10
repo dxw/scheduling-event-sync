@@ -28,7 +28,7 @@ GEM
       addressable (~> 2.2)
       faraday (~> 0.9)
       faraday_middleware (~> 0.9)
-    memo_wise (1.6.0)
+    memo_wise (1.7.0)
     minitest (5.15.0)
     multipart-post (2.1.1)
     parallel (1.21.0)
