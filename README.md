@@ -46,3 +46,20 @@ Running the tests:
 ```
 $ bundle exec rspec lib
 ```
+
+## Debugging
+
+Sometimes the synchronisation can go wrong, and we need to investigate why.
+Very few people have API access to BreatheHR, and those people tend to have very
+little time. In order to make the most out of their limited time, we have a task
+that makes it easier to export the data from BreatheHR, so whoever is debugging the
+app can request it from a person with access and continue working without them.
+
+The task takes as optional arguments a list of emails (separated with **semicolons**)
+and a date.
+
+Example usage:
+
+```
+$ bundle exec rake breathe:data_dump[emails:"example1@example.org;example2@example.org"]
+```
