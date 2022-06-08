@@ -188,4 +188,14 @@ class Event
       other.half_day_at_start == half_day_at_start &&
       other.half_day_at_end == half_day_at_end
   end
+
+  def as_json
+    {
+      "type" => type.to_s,
+      "start_date" => start_date.strftime("%F"),
+      "end_date" => end_date.strftime("%F"),
+      "half_day_at_start" => half_day_at_start,
+      "half_day_at_end" => half_day_at_end
+    }
+  end
 end

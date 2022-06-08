@@ -80,6 +80,10 @@ class EventCollection
     self.class.new(events + other.events)
   end
 
+  def as_json
+    events.map(&:as_json)
+  end
+
   private
 
   attr_writer :events

@@ -51,6 +51,10 @@ class Person
     puts "#{label}: done"
   end
 
+  def breathe_events(after:)
+    BreatheClient.events(person: self, after: after)
+  end
+
   private
 
   attr_writer :breathe_id, :productive_id
@@ -65,10 +69,6 @@ class Person
     self.productive_id = productive_person.id
 
     true
-  end
-
-  def breathe_events(after:)
-    BreatheClient.events(person: self, after: after)
   end
 
   def productive_events(after:)

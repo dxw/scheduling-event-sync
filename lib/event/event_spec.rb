@@ -946,4 +946,23 @@ RSpec.describe Event do
       expect(event == other).to be(false)
     end
   end
+
+  describe "#as_json" do
+    it "returns the attributes ready to be JSONified" do
+      event = Event.new(
+        type: :holiday,
+        start_date: start_date,
+        end_date: end_date
+      )
+      expect(event.as_json).to eql(
+        {
+          "type" => "holiday",
+          "start_date" => start_date.strftime("%F"),
+          "end_date" => end_date.strftime("%F"),
+          "half_day_at_end" => false,
+          "half_day_at_start" => false
+        }
+      )
+    end
+  end
 end
