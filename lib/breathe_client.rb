@@ -82,23 +82,30 @@ class BreatheClient
     def training_events(person:, after:)
       events = trainings(employee_id: person.breathe_id, after: after)
         .map { |training|
-          start_date = training[:start_date]&.to_date
+          start_date = training[:start_on]&.to_date
 
-          next if start_date.nil?
+          if start_date.nil?
+            puts "[DEBUG] Skipping training with nil start_date for #{person.breathe_id}"
+            next
+          end
 
-          end_date = training[:end_date]&.to_date
+          end_date = training[:end_on]&.to_date
 
-          next if end_date.nil?
+          if end_date.nil?
+            puts "[DEBUG] Skipping training with nil end_date for #{person.breathe_id}"
+            next
+          end
 
-          half_day_at_start = training[:half_start]
-          half_day_at_end = training[:half_end]
+          # TODO: Fix half day logic
+          # half_day_at_start = training[:half_start]
+          # half_day_at_end = training[:half_end]
 
           Event.new(
             type: :other_leave,
             start_date: start_date,
-            end_date: end_date,
-            half_day_at_start: half_day_at_start,
-            half_day_at_end: half_day_at_end
+            end_date: end_date
+            # half_day_at_start: half_day_at_start,
+            # half_day_at_end: half_day_at_end
           )
         }
         .compact
