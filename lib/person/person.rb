@@ -51,8 +51,12 @@ class Person
     puts "#{label}: done"
   end
 
-  def breathe_events(after:)
-    BreatheClient.events(person: self, after: after)
+  def breathe_data(after:)
+    {
+      emails: emails,
+      earliest_date: after.strftime("%F"),
+      events: breathe_events(after: after).as_json
+    }
   end
 
   private
@@ -69,6 +73,10 @@ class Person
     self.productive_id = productive_person.id
 
     true
+  end
+
+  def breathe_events(after:)
+    BreatheClient.events(person: self, after: after)
   end
 
   def productive_events(after:)

@@ -77,7 +77,7 @@ namespace :breathe do
       .each { |person| person.sync_breathe_to_productive(after: earliest_date) }
   end
 
-  desc "Obtain the data from breathe"
+  desc "Obtain the event data from BreatheHR for all or specified employees"
   task :data_dump, [:emails, :earliest_date] do |t, args|
     args.with_defaults(emails: "", earliest_date: (Date.today - 90).strftime)
 
@@ -101,8 +101,12 @@ namespace :breathe do
     people = Person.all_from_breathe
     people = people.select { |person| (person.emails & emails).any? } if emails.any?
 
-    from_breathe = people.map { |person| person.breathe_events(after: earliest_date).as_json }
+    require "fileutils"
+    FileUtils.mkdir_p "tmp/data/breathe"
 
-    File.write("Events from breathe after #{earliest_date.strftime}.json", from_breathe)
+    people.map do |person|
+      person_data = person.breathe_data(after: earliest_date)
+      File.write("tmp/data/breathe/#{person.emails.first}.json", JSON.generate(person_data))
+    end
   end
 end
