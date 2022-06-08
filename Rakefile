@@ -78,11 +78,13 @@ namespace :breathe do
   end
 
   desc "Obtain the data from breathe"
-  task :data_dump, [:earliest_date] do |t, args|
-    args.with_defaults(earliest_date: (Date.today - 90).strftime)
+  task :data_dump, [:emails, :earliest_date] do |t, args|
+    args.with_defaults(emails: "", earliest_date: (Date.today - 90).strftime)
 
     earliest_date = Date.parse(args[:earliest_date])
     puts "Fetching events on or after #{earliest_date.strftime}"
+
+    emails = args[:emails].split(";").map(&:strip)
 
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
@@ -96,9 +98,10 @@ namespace :breathe do
       email_aliases: email_aliases
     )
 
-    from_breathe = Person
-      .all_from_breathe
-      .map { |person| person.breathe_events(after: earliest_date).as_json }
+    people = Person.all_from_breathe
+    people = people.select { |person| (person.emails & emails).any? } if emails.any?
+
+    from_breathe = people.map { |person| person.breathe_events(after: earliest_date).as_json }
 
     File.write("Events from breathe after #{earliest_date.strftime}.json", from_breathe)
   end
