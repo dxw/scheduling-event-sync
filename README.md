@@ -38,3 +38,11 @@ argument into the task.
 ```
 $ bundle exec rake 'breathe:to_productive[2020-01-01]'
 ```
+
+## Developing
+
+Running the tests:
+
+```
+$ bundle exec rspec lib
+```
