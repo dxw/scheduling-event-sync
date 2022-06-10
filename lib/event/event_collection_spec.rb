@@ -284,4 +284,22 @@ RSpec.describe EventCollection do
       expect(collection.events).to be(events)
     end
   end
+
+  describe "#as_json" do
+    it "returns the events as json" do
+      first_event = Event.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 1),
+        end_date: Date.new(2000, 2, 1)
+      )
+      second_event = Event.new(
+        type: :holiday,
+        start_date: Date.new(2000, 1, 10),
+        end_date: Date.new(2000, 1, 14)
+      )
+
+      collection = EventCollection.new([first_event, second_event])
+      expect(collection.as_json).to eql([first_event.as_json, second_event.as_json])
+    end
+  end
 end

@@ -51,6 +51,14 @@ class Person
     puts "#{label}: done"
   end
 
+  def breathe_data(after:)
+    {
+      emails: emails,
+      earliest_date: after.strftime("%F"),
+      events: breathe_events(after: after).as_json
+    }
+  end
+
   private
 
   attr_writer :breathe_id, :productive_id
