@@ -51,15 +51,44 @@ $ bundle exec rspec lib
 
 Sometimes the synchronisation can go wrong, and we need to investigate why.
 Very few people have API access to BreatheHR, and those people tend to have very
-little time. In order to make the most out of their limited time, we have a task
-that makes it easier to export the data from BreatheHR, so whoever is debugging the
-app can request it from a person with access and continue working without them.
+little time. In order to make the most out of their limited time, we have a couple of
+tasks that make it easier to work with the data.
+
+### Exporting data from BreatheHR
+
+Also known as a data dump. This tasks exports the event data from BreatheHR, so whoever
+is debugging the app can request it from a person with access and work off the outputted
+files.
 
 The task takes as optional arguments a list of emails (separated with **semicolons**)
-and a date.
+and the earliest date to look up events from (`earliest_date`).
 
 Example usage:
 
 ```
 $ bundle exec rake breathe:data_dump[emails:"example1@example.org;example2@example.org"]
+```
+
+Note: for some shells, such as zsh, you might have to escape the square brackets, e.g.
+
+```
+$ bundle exec rake breathe:data_dump\[emails:"example1@example.org;example2@example.org"\]
+```
+
+If no emails are given, it will export data for all people records in Breathe, and if no
+starting date is given a default date will be used (currently 90 days before the current
+date).
+
+### Executing a dry run of synchronising data from files into Productive
+
+Requires:
+
+- Productive API credentials (read access is sufficient)
+- Data dumps in the format produced by the previous task to be present in the local folder
+`tmp/data/breathe/`
+
+Example usage:
+
+```
+$ bundle exec rake breathe:to_productive_from_dump
 ```

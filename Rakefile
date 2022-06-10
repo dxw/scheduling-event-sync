@@ -109,4 +109,41 @@ namespace :breathe do
       File.write("tmp/data/breathe/#{person.emails.first}.json", JSON.generate(person_data))
     end
   end
+
+  desc "Do a verbose dry run from files of BreatheHR data"
+  task :to_productive_from_dump do
+    puts "Doing a dry run!"
+    puts
+    puts "This task always does a dry run."
+    puts "You must use the Breathe API to make real changes:"
+    puts
+    puts "$ bundle exec rake breathe:to_productive"
+    puts
+
+    ProductiveClient.configure(
+      account_id: ENV.fetch("PRODUCTIVE_ACCOUNT_ID"),
+      api_key: ENV.fetch("PRODUCTIVE_API_KEY"),
+      event_ids: {
+        holiday: ENV.fetch("PRODUCTIVE_HOLIDAY_EVENT_ID"),
+        sickness: ENV.fetch("PRODUCTIVE_SICKNESS_EVENT_ID"),
+        other_leave: ENV.fetch("PRODUCTIVE_OTHER_LEAVE_EVENT_ID")
+      },
+      dry_run: true
+    )
+
+    filenames = Dir.glob("tmp/data/breathe/*.json")
+    puts "Using data from #{filenames}"
+
+    filenames.each do |filename|
+      person_data = JSON.parse(File.open(filename).read)
+
+      person = Person.new(emails: person_data["emails"])
+      breathe_events = EventCollection.from_array(person_data["events"])
+
+      person.sync_breathe_to_productive(
+        after: Date.parse(person_data["earliest_date"]),
+        breathe_events: breathe_events
+      )
+    end
+  end
 end
