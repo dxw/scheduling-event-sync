@@ -1,6 +1,18 @@
 require_relative "./event"
 
 class EventCollection
+  def self.from_array(events_as_array)
+    EventCollection.new(events_as_array.map do |event|
+      Event.new(
+        type: event["type"].to_sym,
+        start_date: Date.parse(event["start_date"]),
+        end_date: Date.parse(event["end_date"]),
+        half_day_at_start: event["half_day_at_start"],
+        half_day_at_end: event["half_day_at_end"]
+      )
+    end)
+  end
+
   attr_reader :events
 
   def initialize(events)

@@ -3,6 +3,33 @@ require_relative "./event"
 require_relative "./event_collection"
 
 RSpec.describe EventCollection do
+  describe ".from_array" do
+    it "initalises an event collection" do
+      events_array = [
+        {
+          "type" => "holiday",
+          "start_date" => "2020-02-02",
+          "end_date" => "2020-03-01",
+          "half_day_at_start" => true,
+          "half_day_at_end" => true
+        }
+      ]
+
+      collection = EventCollection.from_array(events_array)
+
+      expect(collection).to be_a(EventCollection)
+      expect(collection.events).to eq([
+        Event.new(
+          type: :holiday,
+          start_date: Date.new(2020, 2, 2),
+          end_date: Date.new(2020, 3, 1),
+          half_day_at_start: true,
+          half_day_at_end: true
+        )
+      ])
+    end
+  end
+
   describe "#events" do
     it "returns the events, sorted by start date" do
       earliest = Event.new(

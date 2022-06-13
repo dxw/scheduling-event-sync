@@ -30,7 +30,7 @@ class Person
     emails.first
   end
 
-  def sync_breathe_to_productive(after:)
+  def sync_breathe_to_productive(after:, breathe_events: nil)
     unless fetch_productive_attributes
       puts "#{label}: no match on Productive"
       return
@@ -38,7 +38,7 @@ class Person
 
     puts "#{label}: finding changes"
 
-    breathe_events = breathe_events(after: after)
+    breathe_events = breathe_events(after: after) unless breathe_events
     productive_events = productive_events(after: after)
 
     changeset = {
