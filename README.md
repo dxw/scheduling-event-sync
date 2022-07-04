@@ -4,6 +4,16 @@ At dxw we use a variety of different systems for tracking things like holiday
 and sickness, support rotas, and project scheduling. This project automates
 synchronising those different systems.
 
+Within dxw this project is deployed and run on Heroku. Due to the sensitive
+nature of the data, only a handful of people have access to it.
+
+**NOTE** While the GitHub - Heroku integration is broken[1], code merged
+into `main` will not be automatically deployed to Heroku, and one of the people
+with access will have to deploy it manually.
+
+[1] https://blog.heroku.com/github-integration-update
+https://help.heroku.com/UIUA61EH/how-do-i-reconnect-the-github-integration
+
 ## Manual usage
 
 Normally you should be running this on a schedule eg on Heroku, but in case you
