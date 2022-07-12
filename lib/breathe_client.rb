@@ -96,16 +96,15 @@ class BreatheClient
             next
           end
 
-          # TODO: Fix half day logic
-          # half_day_at_start = training[:half_start]
-          # half_day_at_end = training[:half_end]
+          half_day_at_start = training[:half_day] && training[:half_day_am_pm].to_s.downcase == "am"
+          half_day_at_end = training[:half_day] && training[:half_day_am_pm].to_s.downcase == "pm"
 
           Event.new(
             type: :other_leave,
             start_date: start_date,
             end_date: end_date
-            # half_day_at_start: half_day_at_start,
-            # half_day_at_end: half_day_at_end
+            half_day_at_start: half_day_at_start,
+            half_day_at_end: half_day_at_end
           )
         }
         .compact
