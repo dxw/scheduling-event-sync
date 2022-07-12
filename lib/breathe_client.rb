@@ -102,7 +102,7 @@ class BreatheClient
           Event.new(
             type: :other_leave,
             start_date: start_date,
-            end_date: end_date
+            end_date: end_date,
             half_day_at_start: half_day_at_start,
             half_day_at_end: half_day_at_end
           )
