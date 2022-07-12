@@ -11,3 +11,5 @@ jobs:
           bundler-cache: true
       - name: Run tests
         run: bundle exec rspec lib
+      - name: Run linting
+        run: bundle exec standardrb
