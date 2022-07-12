@@ -135,7 +135,7 @@ namespace :breathe do
     puts "Using data from #{filenames}"
 
     filenames.each do |filename|
-      person_data = JSON.parse(File.open(filename).read)
+      person_data = JSON.parse(File.read(filename))
 
       person = Person.new(emails: person_data["emails"])
       breathe_events = EventCollection.from_array(person_data["events"])

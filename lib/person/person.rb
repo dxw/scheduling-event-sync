@@ -38,7 +38,7 @@ class Person
 
     puts "#{label}: finding changes"
 
-    breathe_events = breathe_events(after: after) unless breathe_events
+    breathe_events ||= breathe_events(after: after)
     productive_events = productive_events(after: after)
 
     changeset = {
