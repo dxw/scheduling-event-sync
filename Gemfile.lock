@@ -92,7 +92,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  breathe
+  breathe (= 0.3.3)
   dotenv
   memo_wise
   productive
