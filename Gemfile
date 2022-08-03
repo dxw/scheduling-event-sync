@@ -7,7 +7,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gem "breathe", "0.3.3"
 gem "dotenv"
 gem "memo_wise"
-gem "productive"
+gem "productive", "0.6.50"
 gem "rake"
 
 group :development do
