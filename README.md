@@ -70,19 +70,19 @@ Also known as a data dump. This tasks exports the event data from BreatheHR, so 
 is debugging the app can request it from a person with access and work off the outputted
 files.
 
-The task takes as optional arguments a list of emails (separated with **semicolons**)
-and the earliest date to look up events from (`earliest_date`).
+The task takes as arguments a list of emails (separated with **semicolons**)
+and (optionally) the earliest date to look up events from in YYYY-MM-DD format.
 
 Example usage:
 
 ```
-$ bundle exec rake breathe:data_dump[emails:"example1@example.org;example2@example.org"]
+$ bundle exec rake breathe:data_dump["example1@example.org;example2@example.org","2022-07-01"]
 ```
 
 Note: for some shells, such as zsh, you might have to escape the square brackets, e.g.
 
 ```
-$ bundle exec rake breathe:data_dump\[emails:"example1@example.org;example2@example.org"\]
+$ bundle exec rake breathe:data_dump\["example1@example.org;example2@example.org","2022-07-01"\]
 ```
 
 If no emails are given, it will export data for all people records in Breathe, and if no
