@@ -23,13 +23,24 @@ def email_aliases
     .map { |line| line.strip.split(/\s*[,;]\s*/) }
 end
 
-def notify_slack(message)
+def configure_slack
   Slack.configure do |config|
     config.token = ENV.fetch("SLACK_API_TOKEN")
   end
-  client = Slack::Web::Client.new
+  Slack::Web::Client.new
+end
 
-  client.chat_postMessage(channel: ENV.fetch("SLACK_NOTIFICATION_CHANNEL"), text: message, as_user: true)
+def notify_slack(client, message)
+  message_json = message.to_json
+
+  client.chat_postMessage(
+    channel: ENV.fetch("SLACK_NOTIFICATION_CHANNEL"),
+    text: message,
+    blocks: %([
+      {"type": "section", "text": {"type": "mrkdwn", "text": #{message_json}}}
+      ]),
+    as_user: true
+  )
 end
 
 namespace :productive do
@@ -87,10 +98,14 @@ namespace :breathe do
     Person
       .all_from_breathe
       .each { |person| person.sync_breathe_to_productive(after: earliest_date) }
-  rescue
-    notify_slack ":alert: There was an error with the Breathe/Productive Sync integration.\n"\
-                 "Repository: https://github.com/dxw/scheduling-event-sync/\n"\
-                 "<!channel>"
+  rescue => e
+    slack_client = configure_slack
+    message = "There was a *#{e.class}* error with the Breathe/Productive Sync integration:\n"\
+              "```#{e.message}```\n"\
+              "Repository: https://github.com/dxw/scheduling-event-sync/"
+    notify_slack slack_client, message
+    backtrace = e.backtrace.reject { |x| x.include? "/bundle/ruby/" }
+    notify_slack slack_client, "Abbrieviated stack trace:\n```" + backtrace.join("\n")[0..2975] + "```"
     raise
   end
 
