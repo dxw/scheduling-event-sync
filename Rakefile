@@ -1,6 +1,8 @@
 require "dotenv"
 Dotenv.load
 
+require "slack-ruby-client"
+
 require_relative "./lib/event/event"
 require_relative "./lib/event/event_collection"
 require_relative "./lib/person/person"
@@ -21,6 +23,15 @@ def email_aliases
     .map { |line| line.strip.split(/\s*[,;]\s*/) }
 end
 
+def notify_slack(message)
+  Slack.configure do |config|
+    config.token = ENV.fetch("SLACK_API_TOKEN")
+  end
+  client = Slack::Web::Client.new
+
+  client.chat_postMessage(channel: ENV.fetch("SLACK_NOTIFICATION_CHANNEL"), text: message, as_user: true)
+end
+
 namespace :productive do
   desc "List all event types on Productive"
   task :list_event_types do
@@ -39,6 +50,7 @@ namespace :breathe do
   task :to_productive, [:earliest_date] do |t, args|
     args.with_defaults(earliest_date: (Date.today - 90).strftime)
 
+    # wrap the whole thing in a try catch to rescue the errors and notify them
     dry_run = to_bool(ENV.fetch("SYNC_DRY_RUN", true))
 
     if dry_run
@@ -75,6 +87,11 @@ namespace :breathe do
     Person
       .all_from_breathe
       .each { |person| person.sync_breathe_to_productive(after: earliest_date) }
+  rescue
+    notify_slack ":alert: There was an error with the Breathe/Productive Sync integration.\n"\
+                 "Repository: https://github.com/dxw/scheduling-event-sync/\n"\
+                 "<!channel>"
+    raise
   end
 
   desc "Obtain the event data from BreatheHR for all or specified employees"

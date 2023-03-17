@@ -7,6 +7,16 @@ synchronising those different systems.
 Within dxw this project is deployed and run on Heroku. Due to the sensitive
 nature of the data, only a handful of people have access to it.
 
+## Slack Integration
+
+The app will post messages to a slack channel to report if it has encountered
+an error. You will need to type `@Breathe Productive Sync` to add them to a new
+channel.
+
+You might need to get added to the collaborators list if you need to tweak the
+bot's configuration:
+https://app.slack.com/app-settings/T025PM7N0/A04U1KEJFKR/collaborators
+
 ## Manual usage
 
 Normally you should be running this on a schedule eg on Heroku, but in case you
