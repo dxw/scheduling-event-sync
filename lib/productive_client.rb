@@ -106,7 +106,7 @@ class ProductiveClient
         )
 
         time =
-          event.half_day_at_start || event.half_day_at_end ?
+          (event.half_day_at_start || event.half_day_at_end) ?
           working_time / 2 :
           working_time
 
