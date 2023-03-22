@@ -9,6 +9,7 @@ gem "dotenv"
 gem "memo_wise"
 gem "productive", "0.6.50"
 gem "rake"
+gem "slack-ruby-client"
 
 group :development do
   gem "standard"
