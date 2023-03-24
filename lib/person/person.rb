@@ -54,7 +54,7 @@ class Person
   def breathe_data(after:)
     {
       emails: emails,
-      earliest_date: after.strftime("%F"),
+      earliest_date: after,
       events: breathe_events(after: after).as_json
     }
   end
