@@ -90,7 +90,7 @@ class ProductiveClient
           }
 
         matching_bookings.each { |booking|
-          puts "#{person.label}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
+          puts "[INFO] #{person.label}: remove #{event_ids.key(booking.event.id)} #{booking.started_on.to_date} - #{booking.ended_on.to_date} (#{booking.time.to_f / 60} hours / day)"
 
           booking.destroy unless dry_run
         }
@@ -110,16 +110,19 @@ class ProductiveClient
           working_time / 2 :
           working_time
 
-        puts "#{person.label}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
+        puts "[INFO] #{person.label}: create #{event.type} #{event.start_date} - #{event.end_date} (#{time.to_f / 60} hours / day)"
 
         unless dry_run
-          Productive::Booking.create(
+          response = Productive::Booking.create(
             person_id: person.productive_id,
             event_id: event_id,
             started_on: event.start_date,
             ended_on: event.end_date,
             time: time
           )
+          if response.nil? || response.attributes["id"].nil?
+            puts "[ERROR] #{person.label}: Productive booking #{event.type} #{event.start_date} - #{event.end_date} not created"
+          end
         end
       }
     end
