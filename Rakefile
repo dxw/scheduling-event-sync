@@ -104,7 +104,7 @@ namespace :breathe do
               "Repository: https://github.com/dxw/scheduling-event-sync/"
     notify_slack slack_client, message
     backtrace = e.backtrace.reject { |x| x.include? "/bundle/ruby/" }
-    notify_slack slack_client, "Abbrieviated stack trace:\n```" + backtrace.join("\n")[0..2975] + "```"
+    notify_slack slack_client, "Abbreviated stack trace:\n```" + backtrace.join("\n")[0..2975] + "```"
     raise
   end
 

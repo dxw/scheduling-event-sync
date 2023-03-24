@@ -4,7 +4,7 @@ require_relative "./event_collection"
 
 RSpec.describe EventCollection do
   describe ".from_array" do
-    it "initalises an event collection" do
+    it "initialises an event collection" do
       events_array = [
         {
           "type" => "holiday",
