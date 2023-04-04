@@ -32,11 +32,11 @@ class Person
 
   def sync_breathe_to_productive(after:, breathe_events: nil)
     unless fetch_productive_attributes
-      puts "#{label}: no match on Productive"
+      puts "[WARNING] #{label}: no match on Productive"
       return
     end
 
-    puts "#{label}: finding changes"
+    puts "[INFO] #{label}: finding changes"
 
     breathe_events ||= breathe_events(after: after)
     productive_events = productive_events(after: after)
@@ -48,13 +48,13 @@ class Person
 
     ProductiveClient.update_events_for(self, changeset)
 
-    puts "#{label}: done"
+    puts "[INFO] #{label}: done"
   end
 
   def breathe_data(after:)
     {
       emails: emails,
-      earliest_date: after.strftime("%F"),
+      earliest_date: after,
       events: breathe_events(after: after).as_json
     }
   end

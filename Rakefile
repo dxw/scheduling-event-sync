@@ -59,9 +59,8 @@ end
 namespace :breathe do
   desc "Update all managed events on Productive to match Breathe"
   task :to_productive, [:earliest_date] do |t, args|
-    args.with_defaults(earliest_date: (Date.today - 90).strftime)
+    args.with_defaults(earliest_date: (Date.today - 90).strftime("%F"))
 
-    # wrap the whole thing in a try catch to rescue the errors and notify them
     dry_run = to_bool(ENV.fetch("SYNC_DRY_RUN", true))
 
     if dry_run
@@ -69,8 +68,8 @@ namespace :breathe do
       puts "Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
     end
 
-    earliest_date = Date.parse(args[:earliest_date])
-    puts "Syncing events on or after #{earliest_date.strftime}"
+    earliest_date = Date.parse(args[:earliest_date]).strftime("%F")
+    puts "Syncing events on or after #{earliest_date}"
 
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
@@ -105,16 +104,16 @@ namespace :breathe do
               "Repository: https://github.com/dxw/scheduling-event-sync/"
     notify_slack slack_client, message
     backtrace = e.backtrace.reject { |x| x.include? "/bundle/ruby/" }
-    notify_slack slack_client, "Abbrieviated stack trace:\n```" + backtrace.join("\n")[0..2975] + "```"
+    notify_slack slack_client, "Abbreviated stack trace:\n```" + backtrace.join("\n")[0..2975] + "```"
     raise
   end
 
   desc "Obtain the event data from BreatheHR for all or specified employees"
   task :data_dump, [:emails, :earliest_date] do |t, args|
-    args.with_defaults(emails: "", earliest_date: (Date.today - 90).strftime)
+    args.with_defaults(emails: "", earliest_date: (Date.today - 90).strftime("%F"))
 
-    earliest_date = Date.parse(args[:earliest_date])
-    puts "Fetching events on or after #{earliest_date.strftime}"
+    earliest_date = Date.parse(args[:earliest_date]).strftime("%F")
+    puts "Fetching events on or after #{earliest_date}"
 
     emails = args[:emails].split(";").map(&:strip)
 
@@ -173,7 +172,7 @@ namespace :breathe do
       breathe_events = EventCollection.from_array(person_data["events"])
 
       person.sync_breathe_to_productive(
-        after: Date.parse(person_data["earliest_date"]),
+        after: person_data["earliest_date"],
         breathe_events: breathe_events
       )
     end
