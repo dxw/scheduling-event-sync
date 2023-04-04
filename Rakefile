@@ -94,9 +94,15 @@ namespace :breathe do
       dry_run: dry_run
     )
 
-    Person
-      .all_from_breathe
-      .each { |person| person.sync_breathe_to_productive(after: earliest_date) }
+    people_to_sync = Person.all_from_breathe
+    emails = ENV.fetch("EMAILS", "").split(",").map(&:strip)
+
+    if emails.any?
+      people_to_sync = people_to_sync.select { |person| (person.emails & emails).any? }
+      puts "[INFO] Syncing events for #{people_to_sync.map(&:label).join(", ")}"
+    end
+
+    people_to_sync.each { |person| person.sync_breathe_to_productive(after: earliest_date) }
   rescue => e
     slack_client = configure_slack
     message = "There was a *#{e.class}* error with the Breathe/Productive Sync integration:\n"\
