@@ -64,12 +64,12 @@ namespace :breathe do
     dry_run = to_bool(ENV.fetch("SYNC_DRY_RUN", true))
 
     if dry_run
-      puts "Doing a dry run!"
-      puts "Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
+      puts "[INFO] Doing a dry run!"
+      puts "[INFO] Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
     end
 
     earliest_date = Date.parse(args[:earliest_date]).strftime("%F")
-    puts "Syncing events on or after #{earliest_date}"
+    puts "[INFO] Syncing events on or after #{earliest_date}"
 
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
