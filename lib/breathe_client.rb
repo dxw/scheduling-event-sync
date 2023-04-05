@@ -95,14 +95,14 @@ class BreatheClient
           start_date = training[:start_on]&.to_date
 
           if start_date.nil?
-            puts "[DEBUG] Skipping training with nil start_date for #{person.breathe_id}"
+            puts "[DEBUG] #{person.label}: Skipping training with nil start_date"
             next
           end
 
           end_date = training[:end_on]&.to_date
 
           if end_date.nil?
-            puts "[DEBUG] Skipping training with nil end_date for #{person.breathe_id}"
+            puts "[DEBUG] #{person.label}: Skipping training with nil end_date"
             next
           end
 
