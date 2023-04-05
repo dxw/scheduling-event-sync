@@ -64,12 +64,12 @@ namespace :breathe do
     dry_run = to_bool(ENV.fetch("SYNC_DRY_RUN", true))
 
     if dry_run
-      puts "Doing a dry run!"
-      puts "Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
+      puts "[INFO] Doing a dry run!"
+      puts "[INFO] Temporarily set the environment variable `SYNC_DRY_RUN` to a falsy value to make\nreal changes to Productive"
     end
 
     earliest_date = Date.parse(args[:earliest_date]).strftime("%F")
-    puts "Syncing events on or after #{earliest_date}"
+    puts "[INFO] Syncing events on or after #{earliest_date}"
 
     BreatheClient.configure(
       api_key: ENV.fetch("BREATHE_API_KEY"),
@@ -94,9 +94,15 @@ namespace :breathe do
       dry_run: dry_run
     )
 
-    Person
-      .all_from_breathe
-      .each { |person| person.sync_breathe_to_productive(after: earliest_date) }
+    people_to_sync = Person.all_from_breathe
+    emails = ENV.fetch("EMAILS", "").split(",").map(&:strip)
+
+    if emails.any?
+      people_to_sync = people_to_sync.select { |person| (person.emails & emails).any? }
+      puts "[INFO] Syncing events for #{people_to_sync.map(&:label).join(", ")}"
+    end
+
+    people_to_sync.each { |person| person.sync_breathe_to_productive(after: earliest_date) }
   rescue => e
     slack_client = configure_slack
     message = "There was a *#{e.class}* error with the Breathe/Productive Sync integration:\n"\

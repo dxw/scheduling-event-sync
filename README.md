@@ -52,6 +52,16 @@ argument into the task.
 $ bundle exec rake 'breathe:to_productive[2020-01-01]'
 ```
 
+#### Specifying the accounts to synchronise
+
+By default, the task runs for all the people records in BreatheHR. If you want
+to sync specific people's records, do so by passing an EMAILS environment
+variable to the task, containing the comma-separated emails.
+
+```
+$ bundle exec rake breathe:to_productive EMAILS=someone@dxw.com,sometwo@dxw.com
+```
+
 ## Developing
 
 Running the tests:
