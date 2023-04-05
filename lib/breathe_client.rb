@@ -43,6 +43,11 @@ class BreatheClient
           half_day_at_start = absence.half_start
           half_day_at_end = absence.half_end
 
+          if end_date < Date.parse(after)
+            puts "[DEBUG] #{person.label}: Skipping absence with end date #{end_date.strftime("%F")} older than the requested earliest date #{after}"
+            next
+          end
+
           Event.new(
             type: type,
             start_date: start_date,
@@ -64,6 +69,11 @@ class BreatheClient
           end_date = sickness[:end_date]&.to_date || Date.today
           half_day_at_start = sickness[:half_start]
           half_day_at_end = sickness[:half_end]
+
+          if end_date < Date.parse(after)
+            puts "[DEBUG] #{person.label}: Skipping sickness with end date #{end_date.strftime("%F")} older than the requested earliest date #{after}"
+            next
+          end
 
           Event.new(
             type: :sickness,
@@ -93,6 +103,11 @@ class BreatheClient
 
           if end_date.nil?
             puts "[DEBUG] Skipping training with nil end_date for #{person.breathe_id}"
+            next
+          end
+
+          if end_date < Date.parse(after)
+            puts "[DEBUG] #{person.label}: Skipping training with end date #{end_date.strftime("%F")} older than the requested earliest date #{after}"
             next
           end
 
