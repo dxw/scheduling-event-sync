@@ -154,8 +154,7 @@ class BreatheClient
         .absences
         .list(
           employee_id: employee_id,
-          after: after,
-          exclude_cancelled_absences: true
+          after: after
         )
         .response
         .data[:absences]
@@ -173,8 +172,7 @@ class BreatheClient
         .sicknesses
         .list(
           employee_id: employee_id,
-          after: after,
-          exclude_cancelled_sicknesses: true
+          after: after
         )
         .response
         .data[:sicknesses]
@@ -192,8 +190,7 @@ class BreatheClient
         .employee_training_courses
         .list(
           employee_id: employee_id,
-          after: after,
-          exclude_cancelled_employee_training_courses: true
+          after: after
         )
         .response
         .data[:employee_training_courses]
