@@ -105,8 +105,8 @@ namespace :breathe do
     people_to_sync.each { |person| person.sync_breathe_to_productive(after: earliest_date) }
   rescue => e
     slack_client = configure_slack
-    message = "There was a *#{e.class}* error with the Breathe/Productive Sync integration:\n"\
-              "```#{e.message}```\n"\
+    message = "There was a *#{e.class}* error with the Breathe/Productive Sync integration:\n" \
+              "```#{e.message}```\n" \
               "Repository: https://github.com/dxw/scheduling-event-sync/"
     notify_slack slack_client, message
     backtrace = e.backtrace.reject { |x| x.include? "/bundle/ruby/" }
