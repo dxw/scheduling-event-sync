@@ -79,6 +79,7 @@ class ProductiveClient
 
         matching_bookings = Productive::Booking
           .where(
+            person_id: person.productive_id,
             event_id: event_id,
             after: event.start_date,
             before: event.end_date
