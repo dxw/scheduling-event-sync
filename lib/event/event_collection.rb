@@ -1,4 +1,4 @@
-require_relative "./event"
+require_relative "event"
 
 class EventCollection
   def self.from_array(events_as_array)

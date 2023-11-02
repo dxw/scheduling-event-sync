@@ -1,6 +1,6 @@
 require "date"
-require_relative "./event"
-require_relative "./event_collection"
+require_relative "event"
+require_relative "event_collection"
 
 RSpec.describe EventCollection do
   describe ".from_array" do
