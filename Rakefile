@@ -1,13 +1,16 @@
 require "dotenv"
 Dotenv.load
 
-require "slack-ruby-client"
-
 require_relative "lib/event/event"
 require_relative "lib/event/event_collection"
 require_relative "lib/person/person"
 require_relative "lib/breathe_client"
 require_relative "lib/productive_client"
+
+Rollbar.configure do |config|
+  config.access_token = ENV.fetch("ROLLBAR_ACCESS_TOKEN")
+  config.environment = ENV.fetch("ROLLBAR_ENVIRONMENT")
+end
 
 def to_bool(arg)
   return true if arg == true || arg =~ (/(true|t|yes|y|1)$/i)
@@ -21,26 +24,6 @@ def email_aliases
     .strip
     .split("\n")
     .map { |line| line.strip.split(/\s*[,;]\s*/) }
-end
-
-def configure_slack
-  Slack.configure do |config|
-    config.token = ENV.fetch("SLACK_API_TOKEN")
-  end
-  Slack::Web::Client.new
-end
-
-def notify_slack(client, message)
-  message_json = message.to_json
-
-  client.chat_postMessage(
-    channel: ENV.fetch("SLACK_NOTIFICATION_CHANNEL"),
-    text: message,
-    blocks: %([
-      {"type": "section", "text": {"type": "mrkdwn", "text": #{message_json}}}
-      ]),
-    as_user: true
-  )
 end
 
 namespace :productive do
@@ -104,13 +87,7 @@ namespace :breathe do
 
     people_to_sync.each { |person| person.sync_breathe_to_productive(after: earliest_date) }
   rescue => e
-    slack_client = configure_slack
-    message = "There was a *#{e.class}* error with the Breathe/Productive Sync integration:\n" \
-              "```#{e.message}```\n" \
-              "Repository: https://github.com/dxw/scheduling-event-sync/"
-    notify_slack slack_client, message
-    backtrace = e.backtrace.reject { |x| x.include? "/bundle/ruby/" }
-    notify_slack slack_client, "Abbreviated stack trace:\n```" + backtrace.join("\n")[0..2975] + "```"
+    Rollbar.error(e)
     raise
   end
 

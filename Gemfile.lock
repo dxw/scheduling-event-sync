@@ -42,8 +42,6 @@ GEM
     faraday-retry (1.0.3)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
-    gli (2.21.1)
-    hashie (5.0.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
@@ -79,6 +77,7 @@ GEM
     request_store (1.5.1)
       rack (>= 1.4)
     rexml (3.2.6)
+    rollbar (3.4.1)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -113,12 +112,6 @@ GEM
     sawyer (0.9.2)
       addressable (>= 2.3.5)
       faraday (>= 0.17.3, < 3)
-    slack-ruby-client (1.0.0)
-      faraday (>= 1.0)
-      faraday_middleware
-      gli
-      hashie
-      websocket-driver
     standard (1.32.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -134,9 +127,6 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
-    websocket-driver (0.7.6)
-      websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.5)
 
 PLATFORMS
   arm64-darwin-20
@@ -153,8 +143,8 @@ DEPENDENCIES
   productive (= 0.6.73)
   pry
   rake
+  rollbar
   rspec
-  slack-ruby-client
   standard
 
 RUBY VERSION
