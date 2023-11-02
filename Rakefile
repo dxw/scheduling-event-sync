@@ -3,11 +3,11 @@ Dotenv.load
 
 require "slack-ruby-client"
 
-require_relative "./lib/event/event"
-require_relative "./lib/event/event_collection"
-require_relative "./lib/person/person"
-require_relative "./lib/breathe_client"
-require_relative "./lib/productive_client"
+require_relative "lib/event/event"
+require_relative "lib/event/event_collection"
+require_relative "lib/person/person"
+require_relative "lib/breathe_client"
+require_relative "lib/productive_client"
 
 def to_bool(arg)
   return true if arg == true || arg =~ (/(true|t|yes|y|1)$/i)
