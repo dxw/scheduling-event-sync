@@ -84,6 +84,7 @@ class ProductiveClient
             after: event.start_date,
             before: event.end_date
           )
+          .includes(:event)
           .all
           .select { |booking|
             booking.started_on.to_date == event.start_date &&
