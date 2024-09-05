@@ -144,6 +144,7 @@ class ProductiveClient
           event_id: event_ids.values,
           after: after
         )
+        .includes(:event)
         .all
     end
     memo_wise :bookings
