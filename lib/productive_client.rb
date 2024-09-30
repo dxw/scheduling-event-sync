@@ -130,7 +130,8 @@ class ProductiveClient
     end
 
     def person(emails:)
-      Productive::Person.where(email: emails).first
+      # Status 1 is active
+      Productive::Person.where(email: emails, status: 1).first
     end
     memo_wise :person
 
