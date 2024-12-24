@@ -65,7 +65,7 @@ GEM
     productive (0.6.80)
       json_api_client (>= 1.13.0, <= 1.21.0)
       request_store (~> 1.3)
-    pry (0.15.0)
+    pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (5.0.5)
