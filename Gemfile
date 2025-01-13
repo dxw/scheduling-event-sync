@@ -11,6 +11,11 @@ gem "productive", "0.6.80"
 gem "rake"
 gem "rollbar"
 
+gem "benchmark"
+gem "bigdecimal"
+gem "logger"
+gem "mutex_m"
+
 group :development do
   gem "standard"
 end

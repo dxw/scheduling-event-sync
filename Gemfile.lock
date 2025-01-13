@@ -11,6 +11,8 @@ GEM
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.2)
+    benchmark (0.4.0)
+    bigdecimal (3.1.9)
     breathe (0.3.6)
       sawyer (>= 0.8.2, < 0.10.0)
     coderay (1.1.3)
@@ -54,10 +56,12 @@ GEM
       rack (>= 0.2)
     language_server-protocol (3.17.0.3)
     lint_roller (1.1.0)
+    logger (1.6.5)
     memo_wise (1.10.0)
     method_source (1.1.0)
     minitest (5.19.0)
     multipart-post (2.3.0)
+    mutex_m (0.3.0)
     parallel (1.26.3)
     parser (3.3.6.0)
       ast (~> 2.4.1)
@@ -133,12 +137,17 @@ PLATFORMS
   x86_64-darwin-21
   x86_64-darwin-22
   x86_64-darwin-23
+  x86_64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
+  benchmark
+  bigdecimal
   breathe (= 0.3.6)
   dotenv
+  logger
   memo_wise
+  mutex_m
   productive (= 0.6.80)
   pry
   rake
