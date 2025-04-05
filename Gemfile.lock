@@ -76,7 +76,7 @@ GEM
     regexp_parser (2.10.0)
     request_store (1.5.1)
       rack (>= 1.4)
-    rollbar (3.6.1)
+    rollbar (3.6.2)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
