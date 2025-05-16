@@ -15,8 +15,8 @@ Rollbar.configure do |config|
 end
 
 def to_bool(arg)
-  return true if arg == true || arg =~ (/(true|t|yes|y|1)$/i)
-  return false if arg == false || arg =~ (/(false|f|no|n|0)$/i)
+  return true if arg == true || arg =~ /(true|t|yes|y|1)$/i
+  return false if arg == false || arg =~ /(false|f|no|n|0)$/i
 
   raise ArgumentError.new("Unable to convert value to boolean: \"#{arg}\"")
 end
