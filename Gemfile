@@ -1,4 +1,4 @@
-ruby "3.4.4"
+ruby File.read(".ruby-version").strip
 
 source "https://rubygems.org"
 
