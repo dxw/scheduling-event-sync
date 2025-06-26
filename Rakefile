@@ -87,7 +87,11 @@ namespace :breathe do
       puts "[INFO] Syncing events for #{people_to_sync.map(&:label).join(", ")}"
     end
 
-    people_to_sync.each { |person| person.sync_breathe_to_productive(after: earliest_date) }
+    people_to_sync.each_with_index do |person, i|
+      completion_percentage = ((i + 1) / people_to_sync.size.to_f * 100).round(2)
+      puts "[INFO] Syncing person #{i + 1} of #{people_to_sync.size} (#{completion_percentage}%) - #{person.label}"
+      person.sync_breathe_to_productive(after: earliest_date)
+    end
   rescue => e
     Rollbar.error(e)
     raise
