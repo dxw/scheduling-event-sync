@@ -12,7 +12,7 @@ class Person
           emails = email_aliases.find { |emails| emails.include?(email) }
           emails = [email] if emails.nil?
 
-          Person.new(emails: emails, breathe_id: id)
+          Person.new(emails: emails, breathe_id: id) if employee[:status] == "Current employee"
         }
         .compact
     end
