@@ -51,7 +51,7 @@ class ProductiveClient
             working_time = daily_working_minutes(
               person_id: person.productive_id,
               after: start_date,
-              before: end_date
+              before: end_date + 1
             )
 
             booking.time <= working_time / 2
@@ -82,7 +82,7 @@ class ProductiveClient
             person_id: person.productive_id,
             event_id: event_id,
             after: event.start_date,
-            before: event.end_date
+            before: event.end_date + 1
           )
           .includes(:event)
           .all
@@ -104,7 +104,7 @@ class ProductiveClient
         working_time = daily_working_minutes(
           person_id: person.productive_id,
           after: event.start_date,
-          before: event.end_date
+          before: event.end_date + 1
         )
 
         time =
