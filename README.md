@@ -52,6 +52,23 @@ variable to the task, containing the comma-separated emails.
 $ bundle exec rake breathe:to_productive EMAILS=someone@dxw.com,sometwo@dxw.com
 ```
 
+The email addresses should be the addresses used in BreatheHR. If a person has
+aliases defined in `EMAIL_ALIASES`, any of their aliases will also match.
+
+#### Excluding accounts from the sync
+
+If you want to prevent specific people's records from being synced, set the
+`EXCLUDED_EMAILS` environment variable to a comma-separated list of email
+addresses. These should be BreatheHR email addresses (or any alias defined in
+`EMAIL_ALIASES`).
+
+```
+$ bundle exec rake breathe:to_productive EXCLUDED_EMAILS=someone@dxw.com,sometwo@dxw.com
+```
+
+`EXCLUDED_EMAILS` can be combined with `EMAILS` — exclusions are applied after
+the inclusion filter.
+
 ## Developing
 
 Running the tests:

@@ -87,6 +87,13 @@ namespace :breathe do
       puts "[INFO] Syncing events for #{people_to_sync.map(&:label).join(", ")}"
     end
 
+    excluded_emails = ENV.fetch("EXCLUDED_EMAILS", "").split(",").map(&:strip)
+
+    if excluded_emails.any?
+      people_to_sync = people_to_sync.reject { |person| (person.emails & excluded_emails).any? }
+      puts "[INFO] Excluding #{excluded_emails.join(", ")} from sync"
+    end
+
     people_to_sync.each_with_index do |person, i|
       completion_percentage = ((i + 1) / people_to_sync.size.to_f * 100).round(2)
       puts "[INFO] Syncing person #{i + 1} of #{people_to_sync.size} (#{completion_percentage}%) - #{person.label}"
