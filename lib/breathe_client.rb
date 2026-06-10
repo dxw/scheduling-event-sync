@@ -154,7 +154,6 @@ class BreatheClient
         .absences
         .list(
           employee_id: employee_id,
-          start_date: after,
           exclude_cancelled_absences: true
         )
         .response
@@ -173,7 +172,6 @@ class BreatheClient
         .sicknesses
         .list(
           employee_id: employee_id,
-          start_date: after,
           exclude_cancelled_sicknesses: true
         )
         .response
