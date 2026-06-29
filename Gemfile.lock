@@ -63,7 +63,7 @@ GEM
       ast (~> 2.4.1)
       racc
     prism (1.9.0)
-    productive (0.6.87)
+    productive (0.6.88)
       json_api_client (>= 1.13.0)
       request_store (~> 1.3)
     public_suffix (7.0.5)
@@ -151,7 +151,7 @@ DEPENDENCIES
   logger
   memo_wise
   mutex_m
-  productive (= 0.6.87)
+  productive (= 0.6.88)
   rake
   rollbar
   rspec
